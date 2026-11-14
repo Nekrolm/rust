@@ -45,6 +45,13 @@ def capture(command, **kwargs):
     return subprocess.check_output(command, text=True, **kwargs).strip()
 
 
+def compiler_identity(cfg, compiler):
+    env = os.environ.copy()
+    env.update(cfg.get("environment", {}))
+    env.update(compiler.get("environment", {}))
+    return capture([compiler["rustc"], "-Vv"], env=env)
+
+
 def summarize(records):
     groups = collections.defaultdict(list)
     for row in records:
@@ -120,7 +127,7 @@ def main():
                 "cargo_version": capture([cfg["cargo"], "-V"]),
                 "bevy_commit": capture(["git", "-C", cfg["bevy"], "rev-parse", "HEAD"]),
                 "lockfile_sha256": hashlib.sha256(Path(cfg["manifest"]).with_name("Cargo.lock").read_bytes()).hexdigest(),
-                "compilers": {c["name"]: capture([c["rustc"], "-Vv"]) for c in cfg["compilers"]}}
+                "compilers": {c["name"]: compiler_identity(cfg, c) for c in cfg["compilers"]}}
     (out / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
     trials = [(repeat, debug, opt, case, compiler) for repeat in range(args.repeats)
               for debug, opt in cfg["profiles"] for case in args.cases for compiler in cfg["compilers"]]
@@ -131,6 +138,7 @@ def main():
             target = out / "targets" / key
             env = os.environ.copy()
             env.update(cfg.get("environment", {}))
+            env.update(compiler.get("environment", {}))
             env.update({"RUSTC": compiler["rustc"], "CARGO_TARGET_DIR": str(target),
                         "CARGO_INCREMENTAL": "1", "CARGO_BUILD_JOBS": str(cfg["jobs"]),
                         "CARGO_PROFILE_DEV_DEBUG": str(debug), "CARGO_PROFILE_DEV_OPT_LEVEL": str(opt),
