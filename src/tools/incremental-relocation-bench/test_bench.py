@@ -34,11 +34,15 @@ class HarnessTests(unittest.TestCase):
     def test_report_denominator_and_missing_report(self):
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / "build.log"
-            log.write_text('rustc-relocation: {"schema":1,"event":"cgu","count":2,"outcome":"fallback","reason":"unsupported_lto","skipped":"none","eligible":false}\n'
-                           'rustc-relocation: {"schema":1,"event":"cgu","count":1,"outcome":"accepted","reason":"validated_debug_refresh","skipped":"llvm_optimization","eligible":true}\n')
+            log.write_text('rustc-relocation: {"schema":1,"event":"cgu","count":2,"outcome":"fallback","reason":"unsupported_lto","skipped":"none","candidate":false,"eligible":false}\n'
+                           'rustc-relocation: {"schema":1,"event":"cgu","count":1,"outcome":"accepted","reason":"validated_debug_refresh","skipped":"llvm_optimization","candidate":true,"eligible":true}\n'
+                           'rustc-relocation: {"schema":1,"event":"cache_write","reason":"written"}\n')
             report = diagnostics(log)
             self.assertEqual(report["eligible_candidates"], 1)
             self.assertEqual(report["fallback_fraction_of_all_cgus"], 2 / 3)
+            self.assertEqual(report["supported_dirty_candidates"], 1)
+            self.assertEqual(report["fallback_fraction_of_supported_candidates"], 0)
+            self.assertEqual(report["cache_writes"], {"written": 1})
             log.write_text("ordinary Cargo log\n")
             report = diagnostics(log)
             self.assertIsNone(report["fallback_fraction_of_all_cgus"])

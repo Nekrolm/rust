@@ -29,7 +29,11 @@
   "compilers": [
     {
       "name": "official-1.100.0",
-      "rustc": "/workspace/work/toolchains/1.100.0/bin/rustc"
+      "rustc": "/workspace/work/toolchains/1.100.0/bin/rustc",
+      "flags": [
+        "-Clto=off",
+        "-Cembed-bitcode=no"
+      ]
     }
   ],
   "generic_marker": "    pub fn iter<'w, 's>(&'s mut self, world: &'w World)",

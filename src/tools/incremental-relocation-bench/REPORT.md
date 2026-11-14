@@ -71,6 +71,12 @@ panic locations. Line/full modes also match decoded source-line multisets and
 not a complete DWARF or debugger equivalence proof. Results and runtime stdout
 are retained beside the timing samples. No patched result is implied.
 
+An expanded untimed official-baseline run also passed repeated shifts of +1,
++3, and +2 lines (including backward movement), runtime bounds/overflow panic
+locations, and CRLF input, in all three debug modes. The revised compensated
+and instantiated-body workload edits compile and execute with output `10`.
+`correctness-expanded.json` and `correctness-crlf.json` preserve these results.
+
 The harness's three unit tests cover physical edit accounting, failed-sample
 exclusion, minimum sample disclosure, report fallback denominators, and missing
 report handling. The example configuration successfully constructs every edit

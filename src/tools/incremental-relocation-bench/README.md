@@ -45,6 +45,9 @@ support a timing conclusion. Profiling and report collection are untimed runs.
 
 For patched runs, add separate compiler entries for the same executable with the
 experiment off/on. The enabled entry uses `-Zincremental-source-relocation`.
+Set `-Clto=off -Cembed-bitcode=no` identically for every compared entry; default
+local ThinLTO in optimized profiles is outside the supported prototype. Measure
+that default separately as an unsupported/fallback case.
 Add `-Zincremental-relocation-report` to its `diagnostic_flags`, and run
 `python3 bench.py config.json --repeats 1 --diagnostics`. Parsed report records
 preserve outcome/reason/skipped-stage counts, total CGU event denominators,
@@ -53,7 +56,8 @@ An empty report is unavailable observability, not zero fallback. The report flag
 must remain absent from primary timings.
 
 The direct-rustc correctness runner compares runtime `line!`, `column!`, `file!`,
-`track_caller`, and panic locations after a physical line insertion with a clean
+`track_caller`, panic, bounds, and overflow locations after physical line moves
+of +1, +3, and +2 lines with a clean
 build. For line/full debug modes it also compares decoded source-line multisets
 and declaration/inline-line multisets using `readelf`. These summaries check
 location consistency; they are not a complete DWARF graph or debugger-stepping
@@ -61,3 +65,5 @@ equivalence test. Run separate output directories for each compiler/flag set.
 Use `--flag=-Zincremental-source-relocation` for the experiment and capture reuse
 diagnostics separately. Unsupported outputs/options require additional tests;
 this fixture does not establish their correctness.
+Use `--crlf` to run the same checks with CRLF source. A negative move occurs in
+the +3 to +2 transition, exercising repeated-cache placement updates.

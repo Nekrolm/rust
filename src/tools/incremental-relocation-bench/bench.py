@@ -74,6 +74,7 @@ def diagnostics(log):
     skipped = collections.Counter()
     eligible = 0
     candidates = 0
+    candidate_fallbacks = 0
     eligibility_known = True
     candidates_known = True
     for event in events:
@@ -84,9 +85,13 @@ def diagnostics(log):
         eligible += event["count"] if event.get("eligible") else 0
         candidates_known &= "candidate" in event
         candidates += event["count"] if event.get("candidate") else 0
+        if event.get("candidate") and event["outcome"] == "fallback":
+            candidate_fallbacks += event["count"]
     return {"total_cgu_events": count, "outcomes": dict(outcomes), "reasons": dict(reasons),
             "skipped": dict(skipped), "eligible_candidates": eligible if eligibility_known and count else None,
             "supported_dirty_candidates": candidates if candidates_known and count else None,
+            "candidate_fallbacks": candidate_fallbacks if candidates_known and count else None,
+            "fallback_fraction_of_supported_candidates": candidate_fallbacks / candidates if candidates_known and candidates else None,
             "cache_writes": dict(writes),
             "fallback_fraction_of_all_cgus": outcomes["fallback"] / count if count else None}
 
@@ -101,6 +106,9 @@ def main():
     cfg = json.loads(args.config.read_text())
     out = Path(cfg["output"]).resolve()
     out.mkdir(parents=True, exist_ok=True)
+    record_path = out / ("diagnostics.jsonl" if args.diagnostics else "raw.jsonl")
+    if record_path.exists():
+        raise RuntimeError(f"refusing to mix previous records: {record_path}")
     lock = (out / "benchmark.lock").open("w")
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     source_path = Path(cfg["edited_source"])
@@ -137,7 +145,15 @@ def main():
             with (out / (stem + "-prime.log")).open("w") as log:
                 prime = subprocess.run(command, env=env, stdout=log, stderr=subprocess.STDOUT)
             if prime.returncode:
-                raise RuntimeError(f"baseline failed: {stem}-prime.log")
+                row = {"compiler": compiler["name"], "debug": debug, "opt": opt,
+                       "case": case, "repeat": repeat, "wall_seconds": None,
+                       "exit_code": prime.returncode, "stage": "prime",
+                       "diagnostics_run": args.diagnostics, "log": stem + "-prime.log"}
+                records.append(row)
+                with record_path.open("a") as file:
+                    file.write(json.dumps(row) + "\n")
+                print(json.dumps(row), flush=True)
+                continue
             if case == "touch":
                 os.utime(source_path, None)
             elif case != "noop":
@@ -156,7 +172,7 @@ def main():
             records.append(row)
             if args.diagnostics:
                 row["relocation"] = diagnostics(out / (stem + ".log"))
-            with (out / ("diagnostics.jsonl" if args.diagnostics else "raw.jsonl")).open("a") as file:
+            with record_path.open("a") as file:
                 file.write(json.dumps(row) + "\n")
             print(json.dumps(row), flush=True)
     finally:
