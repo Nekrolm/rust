@@ -1,0 +1,7 @@
+[package]
+name = "relocation-bevy-ecs-consumer"
+version = "0.0.0"
+edition = "2024"
+[workspace]
+[dependencies]
+bevy_ecs = { path = "../bevy-relocation-benchmark/crates/bevy_ecs", default-features = false, features = ["std"] }

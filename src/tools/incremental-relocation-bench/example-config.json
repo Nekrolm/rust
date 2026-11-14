@@ -1,0 +1,43 @@
+{
+  "bevy": "/workspace/work/bevy-relocation-benchmark",
+  "manifest": "/workspace/work/relocation-consumer/Cargo.toml",
+  "edited_source": "/workspace/work/bevy-relocation-benchmark/crates/bevy_ecs/src/query/state.rs",
+  "cargo": "/workspace/work/toolchains/1.100.0/bin/cargo",
+  "environment": {
+    "CARGO_HOME": "/workspace/work/cargo-home"
+  },
+  "output": "/workspace/work/validation-records/bevy",
+  "jobs": 1,
+  "profiles": [
+    [
+      0,
+      0
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      2,
+      1
+    ]
+  ],
+  "compilers": [
+    {
+      "name": "official-1.100.0",
+      "rustc": "/workspace/work/toolchains/1.100.0/bin/rustc"
+    }
+  ],
+  "generic_marker": "    pub fn matched_tables(&self)",
+  "type_marker": "pub struct QueryState<D:",
+  "bottom_marker": "impl<D: QueryData, F: QueryFilter> From<QueryBuilder<'_, D, F>>",
+  "compensated_end_marker": "    /// Returns the archetypes matched by this query.",
+  "body_replace": [
+    "self.matched_tables.ones().map(TableId::from_usize)",
+    "self.matched_tables.ones().rev().map(TableId::from_usize)"
+  ]
+}
