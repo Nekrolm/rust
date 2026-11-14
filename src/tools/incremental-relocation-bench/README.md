@@ -1,8 +1,7 @@
 # Fork-only relocation validation
 
-These LLM-generated scripts support the personal-fork experiment; they do not
-establish that an unbuilt compiler works. They benchmark a **headless `bevy_ecs`
-consumer**, not the whole Bevy engine. The consumer instantiates query paths for
+These LLM-generated scripts support the personal-fork experiment. The checked-in
+example benchmarks a **headless `bevy_ecs` consumer**. The consumer instantiates query paths for
 ten numeric component types. It uses Bevy v0.18.0 at
 `5f8270f2e049f90139a503d1e930070d926f9427`, whose ECS crate declares Rust 1.89.0
 as its minimum version. `consumer/Cargo.lock` pins the resolved dependencies.
@@ -63,6 +62,25 @@ preserve outcome/reason/skipped-stage counts, total CGU event denominators,
 fallback fraction, and eligible candidates when the schema exposes eligibility.
 An empty report is unavailable observability, not zero fallback. The report flag
 must remain absent from primary timings.
+
+Cargo replays cached rustc stderr even on a fresh/no-op build. Diagnostic runs
+therefore use `capture-rustc.py` as a compiler wrapper and count only reports in
+its per-invocation stderr files. Cargo's combined output remains available as a
+log, but its report lines are ignored. Each capture also records the actual
+command and exit status. No actual invocation is reported separately from a
+compiler invocation with missing reports; neither is evidence of zero fallback.
+The wrapper and report flag are absent from primary timings. The wrapper injects
+the known untracked `-Zincremental-relocation-report` flag from `diagnostic_flags`
+without changing Cargo's rustflags or artifact namespace. Other diagnostic flags
+remain Cargo-visible and can require a dependency prime. Actual captured commands
+record the injected flag explicitly.
+Diagnostic capture requires other compiler wrappers to be unset, since a cache
+wrapper could itself replay stderr without executing rustc.
+
+For an untimed profiling subset, set `RELOCATION_TIME_PASSES_CRATES` in
+`diagnostic_env` to comma-separated Rust crate names. The wrapper adds
+`-Ztime-passes` only to matching invocations and records that exact command.
+Keep those captures separate from ordinary diagnostic runs and all timed runs.
 
 The direct-rustc correctness runner compares runtime `line!`, `column!`, `file!`,
 `track_caller`, panic, bounds, and overflow locations after physical line moves

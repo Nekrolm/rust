@@ -1,3 +1,4 @@
+import json
 import unittest
 from pathlib import Path
 import tempfile
@@ -52,6 +53,30 @@ class HarnessTests(unittest.TestCase):
         rows = [{"compiler": "baseline", "debug": 0, "opt": opt, "case": "top",
                  "exit_code": 0, "wall_seconds": 1} for opt in [0, "z"]]
         self.assertEqual([row["opt"] for row in summarize(rows)], [0, "z"])
+
+    def test_cargo_replay_ignored_and_fresh_invocation_counted(self):
+        event = {"schema": 1, "event": "cgu", "count": 7, "outcome": "accepted",
+                 "reason": "validated_identical_ir", "skipped": "llvm_optimization",
+                 "candidate": True, "eligible": True}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            log = root / "cargo.log"
+            log.write_text("rustc-relocation: " + json.dumps(event) + "\n")
+            captures = root / "captures"
+            captures.mkdir()
+            report = diagnostics(log, captures)
+            self.assertEqual(report["report_status"], "no_rustc_invocation")
+            self.assertEqual(report["total_cgu_events"], 0)
+            self.assertEqual(report["cargo_report_lines_ignored"], 1)
+            self.assertIsNone(report["fallback_fraction_of_all_cgus"])
+            event["count"] = 2
+            (captures / "actual.stderr").write_text("rustc-relocation: " + json.dumps(event) + "\n")
+            report = diagnostics(log, captures)
+            self.assertEqual(report["report_status"], "reported")
+            self.assertEqual(report["captured_rustc_invocations"], 1)
+            self.assertEqual(report["total_cgu_events"], 2)
+            self.assertEqual(report["outcomes"], {"accepted": 2})
+            self.assertEqual(report["supported_dirty_candidates"], 2)
 
 
 if __name__ == "__main__":

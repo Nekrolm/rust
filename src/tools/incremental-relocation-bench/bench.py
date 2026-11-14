@@ -155,9 +155,14 @@ def main():
                         "CARGO_ENCODED_RUSTFLAGS": "\x1f".join(compiler.get("flags", []))})
             if args.diagnostics:
                 env.update(compiler.get("diagnostic_env", {}))
-                env["CARGO_ENCODED_RUSTFLAGS"] += "\x1f" + "\x1f".join(compiler.get("diagnostic_flags", []))
-                if env.get("RUSTC_WRAPPER"):
-                    env["RELOCATION_CHAINED_RUSTC_WRAPPER"] = env["RUSTC_WRAPPER"]
+                diagnostic_flags = list(compiler.get("diagnostic_flags", []))
+                if "-Zincremental-relocation-report" in diagnostic_flags:
+                    env["RELOCATION_INJECT_REPORT"] = "1"
+                    diagnostic_flags.remove("-Zincremental-relocation-report")
+                if diagnostic_flags:
+                    env["CARGO_ENCODED_RUSTFLAGS"] += "\x1f" + "\x1f".join(diagnostic_flags)
+                if env.get("RUSTC_WRAPPER") or env.get("RUSTC_WORKSPACE_WRAPPER"):
+                    raise RuntimeError("diagnostic capture requires rustc without another compiler wrapper")
                 env["RUSTC_WRAPPER"] = str(Path(__file__).with_name("capture-rustc.py").resolve())
             command = [cfg["cargo"], "build", "--locked", "--offline", "--manifest-path", cfg["manifest"], *cfg.get("cargo_args", [])]
             cwd = cfg.get("cwd", str(Path(cfg["manifest"]).parent))
