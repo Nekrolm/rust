@@ -852,6 +852,15 @@ pub fn codegen_crate<
 
         match cgu_reuse {
             CguReuse::No => {
+                if !backend.supports_source_relocation() {
+                    crate::back::write::report_source_relocation(
+                        tcx.sess.opts.unstable_opts.incremental_relocation_report,
+                        cgu.name().as_str(),
+                        "fallback",
+                        "unsupported_backend",
+                        "none",
+                    );
+                }
                 let (module, cost) = if let Some(cgu) = pre_compiled_cgus.remove(&i) {
                     cgu.0
                 } else {
@@ -868,6 +877,13 @@ pub fn codegen_crate<
                 submit_codegened_module_to_llvm(&ongoing_codegen.coordinator, module, cost);
             }
             CguReuse::PreLto => {
+                crate::back::write::report_source_relocation(
+                    tcx.sess.opts.unstable_opts.incremental_relocation_report,
+                    cgu.name().as_str(),
+                    "ordinary_reuse",
+                    "green_pre_lto",
+                    "mir_to_llvm",
+                );
                 submit_pre_lto_module_to_llvm(
                     tcx,
                     &ongoing_codegen.coordinator,
@@ -882,6 +898,13 @@ pub fn codegen_crate<
                 tcx.dcx().abort_if_errors();
             }
             CguReuse::PostLto => {
+                crate::back::write::report_source_relocation(
+                    tcx.sess.opts.unstable_opts.incremental_relocation_report,
+                    cgu.name().as_str(),
+                    "ordinary_reuse",
+                    "green_post_lto",
+                    "mir_to_llvm_and_llvm_backend",
+                );
                 submit_post_lto_module_to_llvm(
                     &ongoing_codegen.coordinator,
                     CachedModuleCodegen {

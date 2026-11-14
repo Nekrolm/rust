@@ -168,3 +168,22 @@ fn translation_and_region_bounds_fail_closed_on_overflow() {
     let map = RelocationMap { regions: BTreeMap::from([(old.identity, (old_multiline, new))]) };
     assert_eq!(map.translate_line(old.identity, old.start_line + 1), None);
 }
+
+#[test]
+fn compiler_identity_requires_a_complete_commit_hash() {
+    for hash in [None, Some(""), Some("unknown"), Some("deadbeef"), Some(" ")] {
+        assert_eq!(compiler_cache_identity("1.102.0-dev", hash), None);
+    }
+    assert_eq!(compiler_cache_identity("1.102.0-dev", Some(&"g".repeat(40))), None);
+    assert_eq!(compiler_cache_identity("", Some(&"a".repeat(40))), None);
+}
+
+#[test]
+fn compiler_identity_binds_version_and_commit() {
+    let first = "a".repeat(40);
+    let second = "b".repeat(40);
+    let identity = compiler_cache_identity("1.102.0-nightly", Some(&first)).unwrap();
+    assert_eq!(identity, compiler_cache_identity("1.102.0-nightly", Some(&first)).unwrap());
+    assert_ne!(identity, compiler_cache_identity("1.102.0-nightly", Some(&second)).unwrap());
+    assert_ne!(identity, compiler_cache_identity("1.103.0-nightly", Some(&first)).unwrap());
+}

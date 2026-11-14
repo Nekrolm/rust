@@ -144,6 +144,10 @@ pub trait CodegenBackend {
 pub trait ExtraBackendMethods: Send + Sync + DynSend + DynSync {
     type Module;
 
+    fn supports_source_relocation(&self) -> bool {
+        false
+    }
+
     fn codegen_allocator<'tcx>(
         &self,
         tcx: TyCtxt<'tcx>,

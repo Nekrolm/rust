@@ -4,6 +4,17 @@ const MAGIC: &[u8; 8] = b"RSRLOC\0\x01";
 const CHECKSUM_SIZE: usize = 16;
 pub const MAX_MANIFEST_SIZE: usize = 256 * 1024 * 1024;
 
+pub fn compiler_cache_identity(version: &str, commit_hash: Option<&str>) -> Option<Vec<u8>> {
+    let commit_hash = commit_hash?;
+    if version.is_empty()
+        || commit_hash.len() != 40
+        || !commit_hash.bytes().all(|byte| byte.is_ascii_hexdigit())
+    {
+        return None;
+    }
+    Some(format!("relocation-v1:{version}:{commit_hash}").into_bytes())
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct CacheBinding {
     pub compiler: Vec<u8>,
