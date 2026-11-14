@@ -307,6 +307,8 @@ or linked output, and no split debug information, save-temps, profiling, coverag
 sanitizers, extra passes, plugins, autodiff, or offload. The helper further rejects
 unsupported debug graphs and mappings. In particular, this is a narrow uniform
 movement experiment, not an implementation of the full per-entity map above.
+One source file may move uniformly while foreign and synthetic source files remain
+unchanged; inline callee and call-site lines are mapped by their respective files.
 Requested debug outputs and runtime location constants remain inputs; rejected
 cases take the normal backend path.
 
@@ -329,7 +331,7 @@ scheduler. Alternative backends with independent schedulers may emit no events.
 
 Fallback reasons include `disabled`, `unsupported_lto`, `unsupported_split_debug`,
 `unsupported_output`, `unsupported_instrumentation`, `no_prior_manifest`,
-`malformed_manifest`, `manifest_binding_mismatch`, `semantic_ir_differs`,
+`malformed_manifest`, `manifest_oversize`, `manifest_io_failure`, `manifest_binding_mismatch`, `semantic_ir_differs`,
 `source_mapping_unsupported`, `debug_rewrite_unsupported`, and `malformed_bitcode`.
 Acceptance uses `validated_debug_refresh` and `skipped=llvm_optimization`.
 Separate `cache_write` events report `written`, `manifest_oversize`, or

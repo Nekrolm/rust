@@ -1,8 +1,10 @@
 use std::fs;
 use std::hash::Hasher;
-use std::io::Write;
+use std::io::{Read, Write};
 
-use rustc_codegen_ssa::back::source_relocation::{ArtifactManifest, CacheBinding};
+use rustc_codegen_ssa::back::source_relocation::{
+    ArtifactManifest, CacheBinding, MAX_MANIFEST_SIZE,
+};
 use rustc_codegen_ssa::back::write::{
     BitcodeSection, CodegenContext, EmitObj, ModuleConfig, relocation_manifest_path,
     report_relocation_cache, report_source_relocation,
@@ -113,8 +115,17 @@ pub(super) fn prepare(
 
 fn load(cgcx: &CodegenContext, module: &mut ModuleCodegen<ModuleLlvm>) -> Result<(), &'static str> {
     let old_directory = cgcx.relocation_old_directory.as_ref().ok_or("no_prior_manifest")?;
-    let bytes = fs::read(old_directory.join(format!("{}.relocation", module.name)))
+    let file = fs::File::open(old_directory.join(format!("{}.relocation", module.name)))
         .map_err(|_| "no_prior_manifest")?;
+    let limit = MAX_MANIFEST_SIZE as u64;
+    if file.metadata().map_err(|_| "manifest_io_failure")?.len() > limit {
+        return Err("manifest_oversize");
+    }
+    let mut bytes = Vec::new();
+    file.take(limit + 1).read_to_end(&mut bytes).map_err(|_| "manifest_io_failure")?;
+    if bytes.len() > MAX_MANIFEST_SIZE {
+        return Err("manifest_oversize");
+    }
     let manifest = ArtifactManifest::decode(&bytes, checksum).ok_or("malformed_manifest")?;
     if manifest.binding() != &binding(cgcx, &module.name) {
         return Err("manifest_binding_mismatch");

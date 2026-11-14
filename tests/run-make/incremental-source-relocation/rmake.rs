@@ -75,9 +75,15 @@ fn main() {
 
     rfs::write("sample.rs", SOURCE);
     build("corrupt", &[]);
-    corrupt_manifests(std::path::Path::new("corrupt"));
+    alter_manifests(std::path::Path::new("corrupt"), false);
     rfs::write("sample.rs", format!("\n{SOURCE}"));
     assert_reason(&build("corrupt", &[]), "malformed_manifest");
+
+    rfs::write("sample.rs", SOURCE);
+    build("oversize", &[]);
+    alter_manifests(std::path::Path::new("oversize"), true);
+    rfs::write("sample.rs", format!("\n{SOURCE}"));
+    assert_reason(&build("oversize", &[]), "manifest_oversize");
 
     let executable = "#[track_caller]\nfn caller() -> u32 { std::panic::Location::caller().line() }\nfn main() { println!(\"{}:{}:{}:{}\", line!(), column!(), file!(), caller()); std::panic::set_hook(Box::new(|info| println!(\"panic:{}\", info.location().unwrap().line()))); let _ = std::panic::catch_unwind(|| panic!(\"location\")); }\n";
     rfs::write("sample.rs", executable);
@@ -105,14 +111,18 @@ fn build_executable(incremental: &str) {
         .run();
 }
 
-fn corrupt_manifests(directory: &std::path::Path) {
+fn alter_manifests(directory: &std::path::Path, oversize: bool) {
     for entry in rfs::read_dir(directory) {
         let path = entry.unwrap().path();
         if path.is_dir() {
-            corrupt_manifests(&path);
+            alter_manifests(&path, oversize);
         } else if path.extension().is_some_and(|extension| extension == "relocation") {
             rfs::remove_file(&path);
-            rfs::write(path, b"invalid manifest");
+            if oversize {
+                std::fs::File::create(path).unwrap().set_len(256 * 1024 * 1024 + 1).unwrap();
+            } else {
+                rfs::write(path, b"invalid manifest");
+            }
         }
     }
 }
