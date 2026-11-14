@@ -64,7 +64,41 @@ fn main() {
     build("runtime-line-clean", &[]);
     assert_eq!(incremental_object, rfs::read("sample.o"));
 
-    assert_reason(&build("unsupported", &["-Cembed-bitcode=yes"]), "unsupported_output");
+    rfs::write("sample.rs", SOURCE);
+    build("no-debug", &["-Cdebuginfo=0"]);
+    rfs::write("sample.rs", format!("\n{SOURCE}"));
+    let no_debug = build("no-debug", &["-Cdebuginfo=0"]);
+    assert!(
+        no_debug.contains("\"reason\":\"validated_identical_ir\"")
+            || no_debug.contains("\"reason\":\"green_post_lto\""),
+        "{no_debug}",
+    );
+    let incremental_object = rfs::read("sample.o");
+    build("no-debug-clean", &["-Cdebuginfo=0"]);
+    assert_eq!(incremental_object, rfs::read("sample.o"));
+
+    let identical_ir =
+        SOURCE.replace("answer(x: u64)", "answer()").replace("x.wrapping_mul(3)", "1 + 1");
+    let no_debug_options = ["-Cdebuginfo=0", "-Copt-level=z"];
+    rfs::write("sample.rs", &identical_ir);
+    build("identical-ir", &no_debug_options);
+    rfs::write("sample.rs", identical_ir.replace("1 + 1", "2"));
+    let report = build("identical-ir", &no_debug_options);
+    assert_reason(&report, "validated_identical_ir");
+    assert!(report.contains("\"skipped\":\"llvm_optimization\""));
+    let incremental_object = rfs::read("sample.o");
+    build("identical-ir-clean", &no_debug_options);
+    assert_eq!(incremental_object, rfs::read("sample.o"));
+
+    rfs::write("sample.rs", &runtime_line);
+    build("no-debug-line", &["-Cdebuginfo=0"]);
+    rfs::write("sample.rs", format!("\n{runtime_line}"));
+    assert_reason(&build("no-debug-line", &["-Cdebuginfo=0"]), "semantic_ir_differs");
+    let incremental_object = rfs::read("sample.o");
+    build("no-debug-line-clean", &["-Cdebuginfo=0"]);
+    assert_eq!(incremental_object, rfs::read("sample.o"));
+
+    assert_reason(&build("unsupported", &["--emit=obj,llvm-ir"]), "unsupported_output");
     assert_reason(&build("disabled", &["-Zincremental-source-relocation=no"]), "disabled");
 
     let second = "#[unsafe(no_mangle)]\n#[inline(never)]\npub extern \"C\" fn second(x: u64) -> u64 { x.wrapping_add(7) }\n";

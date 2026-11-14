@@ -300,7 +300,13 @@ versioned, checksummed manifest. The LLVM helper compares canonical modules afte
 removing only debug information, validates its supported debug mapping, and
 refreshes a temporary optimized module. Success skips LLVM optimization; MIR to
 LLVM lowering, object emission, and linking still run. There is no object-section
-patching and no speedup claim before a built compiler executes the tests.
+patching. Built-compiler correctness checks pass as described below; performance
+claims require separate measurements.
+
+Build the experimental compiler with `--set rust.omit-git-hash=false` so that
+`rustc -Vv` reports its complete commit hash. Missing, unknown, empty, truncated,
+or malformed compiler hashes cause `unsupported_compiler_identity` fallback;
+compiler versions alone do not authorize cache reuse across development builds.
 
 The initial configuration requires `-Clto=off -Cembed-bitcode=no`, ordinary object
 or linked output, and no split debug information, save-temps, profiling, coverage,
@@ -311,6 +317,21 @@ One source file may move uniformly while foreign and synthetic source files rema
 unchanged; inline callee and call-site lines are mapped by their respective files.
 Requested debug outputs and runtime location constants remain inputs; rejected
 cases take the normal backend path.
+
+For modules genuinely containing no debug information, an additional path requires
+exact equality of the entire old and current pre-optimization bitcode, retaining
+all metadata. It returns the verified cached optimized module unchanged. This
+path reports `validated_identical_ir`; it skips LLVM optimization only. An ordinary
+no-debug source move can already be green under rustc's dependency checks, in
+which case ordinary reuse takes precedence and this comparison never runs.
+Location-bearing constants such as `line!()` remain part of the exact comparison.
+
+A conservative comparison limitation affects identified LLVM struct types. Parsing
+cached bitcode in the current LLVM context can rename those types, causing
+`semantic_ir_differs` even for otherwise identical input. This loses an
+optimization opportunity and takes the normal backend path. Literal LLVM struct
+types do not require those identified names; the helper does not weaken equality
+to compensate for this limitation.
 
 Manifests bind compiler/cache version, target, tracked session options, and CGU
 identity. They contain exact pre-optimization and optimized bitcode plus a stable
@@ -329,18 +350,33 @@ is established only on acceptance. Ordinary green reuse has a separate outcome.
 Non-LLVM backends report `unsupported_backend` for dirty CGUs in the shared
 scheduler. Alternative backends with independent schedulers may emit no events.
 
-Fallback reasons include `disabled`, `unsupported_lto`, `unsupported_split_debug`,
+Fallback reasons include `disabled`, `unsupported_compiler_identity`,
+`unsupported_lto`, `unsupported_split_debug`,
 `unsupported_output`, `unsupported_instrumentation`, `no_prior_manifest`,
 `malformed_manifest`, `manifest_oversize`, `manifest_io_failure`, `manifest_binding_mismatch`, `semantic_ir_differs`,
 `source_mapping_unsupported`, `debug_rewrite_unsupported`, and `malformed_bitcode`.
-Acceptance uses `validated_debug_refresh` and `skipped=llvm_optimization`.
+Acceptance uses `validated_debug_refresh` or `validated_identical_ir`, with
+`skipped=llvm_optimization`.
 Separate `cache_write` events report `written`, `carried`, `manifest_oversize`, or
 `manifest_io_failure`; exclude those lifecycle events from CGU denominators.
 Reporting is opt-in and contains no source text, paths, or per-item identifiers.
 
-The run-make regression test exercises actual accepted reuse, positive and
-negative repeated shifts, clean-object and decoded-DWARF comparisons, semantic
-edits, runtime `line!` constants, unsupported output fallback, and executed
-`line!`, `column!`, `file!`, track-caller and panic locations. These test cases are
-implementation work awaiting execution with the patched compiler; their presence
-alone is not correctness evidence.
+The run-make regression test passed with a compiler built from production commit
+`b533f1464879063bc047d2c707e2184d41058827`. It exercises actual accepted debug
+refresh, positive and negative repeated shifts, clean-object and decoded-DWARF
+comparisons, semantic edits, runtime `line!` constants, unsupported output
+fallback, and executed `line!`, `column!`, `file!`, track-caller and panic locations.
+A separate no-debug `-Copt-level=z` case changes `1 + 1` to `2`, requires
+`validated_identical_ir` with `skipped=llvm_optimization`, and compares the object
+with a clean build. Three fresh direct runs of the complete test also passed.
+The existing incremental tests `spans_in_type_debuginfo`,
+`spans_significant_w_debuginfo`, and `spans_significant_w_panic` passed with the
+compiler's default options and with relocation enabled, LTO disabled, embedded
+bitcode disabled, and incremental hash verification enabled. These are correctness
+results, not timing results.
+
+One initial direct test run unexpectedly reported `no_prior_manifest` for the
+second runtime-`line!` build. That miss did not reproduce in the subsequent fresh
+runs or the bootstrap run. Its cause remains unexplained; the observed fallback
+did not reuse a stale object. The checks above establish the exercised cases,
+not complete cache lifecycle coverage.

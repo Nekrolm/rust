@@ -119,7 +119,33 @@ int main() {
   StripDebugInfo(*NoDebugOld);
   StripDebugInfo(*NoDebugCurrent);
   assert(run(*NoDebugOld, *NoDebugCurrent, *NoDebugOld, Status));
-  assert(Status == Success);
+  assert(Status == IdenticalIRSuccess);
+  auto NoDebugRuntimeChange = CloneModule(*NoDebugCurrent);
+  cast<ReturnInst>(NoDebugRuntimeChange->getFunction("f")->front().getTerminator())
+      ->setOperand(0, ConstantInt::get(Type::getInt32Ty(C), 99));
+  assert(!run(*NoDebugOld, *NoDebugRuntimeChange, *NoDebugOld, Status));
+  assert(Status == SemanticDifference);
+  assert(!run(*NoDebugOld, *NoDebugOld, *Old, Status));
+  auto HiddenDebug = CloneModule(*NoDebugOld);
+  HiddenDebug->getOrInsertNamedMetadata("relocation.debug-expression")
+      ->addOperand(DIExpression::get(C, {}));
+  assert(!run(*HiddenDebug, *HiddenDebug, *HiddenDebug, Status));
+  auto AttachOpaque = [&](Module &M, StringRef Text) {
+    M.getOrInsertNamedMetadata("relocation.opaque")
+        ->addOperand(MDTuple::get(C, {MDString::get(C, Text)}));
+  };
+  AttachOpaque(*NoDebugOld, "preserved");
+  AttachOpaque(*NoDebugCurrent, "preserved");
+  auto OpaqueResult = run(*NoDebugOld, *NoDebugCurrent, *NoDebugOld, Status);
+  assert(OpaqueResult && Status == IdenticalIRSuccess);
+  assert(serialize(*OpaqueResult) == serialize(*NoDebugOld));
+  NoDebugCurrent->getNamedMetadata("relocation.opaque")->eraseFromParent();
+  AttachOpaque(*NoDebugCurrent, "changed");
+  assert(!run(*NoDebugOld, *NoDebugCurrent, *NoDebugOld, Status));
+  assert(Status == SemanticDifference);
+  auto EmptyDebugRoot = CloneModule(*NoDebugOld);
+  EmptyDebugRoot->getOrInsertNamedMetadata("llvm.dbg.cu");
+  assert(!run(*EmptyDebugRoot, *EmptyDebugRoot, *EmptyDebugRoot, Status));
   auto SemanticChange = fixture(C, 12, 13, B, true);
   assert(!run(*Old, *SemanticChange, *Old, Status));
   assert(Status == SemanticDifference);
