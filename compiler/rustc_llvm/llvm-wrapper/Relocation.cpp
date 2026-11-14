@@ -52,10 +52,36 @@ static bool sameSemantics(Module &A, Module &B) {
   return serialize(*AC) == serialize(*BC);
 }
 
+static bool sameFile(DIFile *A, DIFile *B) {
+  if (!A || !B)
+    return A == B;
+  return A->getFilename() == B->getFilename() &&
+         A->getDirectory() == B->getDirectory();
+}
+
+static bool sameFileContents(DIFile *A, DIFile *B) {
+  return sameFile(A, B) && A->getChecksum() == B->getChecksum() &&
+         A->getSource() == B->getSource();
+}
+
+static DIFile *nodeFile(MDNode *N) {
+  // Inline callees and their inlinedAt callsites have independent file owners.
+  if (auto *L = dyn_cast<DILocation>(N))
+    return L->getFile();
+  if (auto *S = dyn_cast<DISubprogram>(N))
+    return S->getFile();
+  if (auto *L = dyn_cast<DILexicalBlock>(N))
+    return L->getFile();
+  if (auto *V = dyn_cast<DILocalVariable>(N))
+    return V->getFile();
+  return nullptr;
+}
+
 struct DebugGraph {
   SmallPtrSet<Metadata *, 32> Seen;
   SmallVector<MDNode *, 64> Nodes;
   SmallVector<unsigned, 64> Lines;
+  SmallVector<DIFile *, 64> LineFiles;
   SmallVector<DIFile *, 4> Files;
   bool Supported = true;
 
@@ -72,6 +98,7 @@ struct DebugGraph {
     if (!N)
       return;
     Nodes.push_back(N);
+    size_t PriorLines = Lines.size();
     if (auto *L = dyn_cast<DILocation>(N))
       Lines.push_back(L->getLine());
     else if (auto *S = dyn_cast<DISubprogram>(N)) {
@@ -94,6 +121,11 @@ struct DebugGraph {
                  isa<DINamespace>(N) || isa<DITemplateTypeParameter>(N) ||
                  isa<DITemplateValueParameter>(N))) {
       Supported = false;
+    }
+    for (size_t I = PriorLines; I < Lines.size(); ++I) {
+      LineFiles.push_back(nodeFile(N));
+      if (Lines[I] != 0 && !LineFiles.back())
+        Supported = false;
     }
     for (const MDOperand &O : N->operands())
       visit(O.get());
@@ -156,8 +188,12 @@ static std::optional<unsigned> shift(unsigned Line, int64_t Delta) {
 }
 
 static TempMDNode copyNode(MDNode *N, int64_t Delta, bool Normalize,
-                           DIFile *NewFile) {
-  auto line = [&](unsigned L) { return Normalize ? 0 : *shift(L, Delta); };
+                           DIFile *MovingFile, DIFile *NewFile) {
+  auto line = [&](unsigned L) {
+    if (!sameFile(nodeFile(N), MovingFile))
+      return L;
+    return Normalize ? 0 : *shift(L, Delta);
+  };
   LLVMContext &C = N->getContext();
   if (auto *L = dyn_cast<DILocation>(N))
     return DILocation::getTemporary(C, line(L->getLine()), L->getColumn(),
@@ -181,6 +217,8 @@ static TempMDNode copyNode(MDNode *N, int64_t Delta, bool Normalize,
         V->getType(), V->getArg(), V->getFlags(), V->getAlignInBits(),
         V->getAnnotations());
   if (auto *F = dyn_cast<DIFile>(N)) {
+    if (!sameFile(F, MovingFile))
+      return F->clone();
     if (Normalize)
       return DIFile::getTemporary(C, F->getFilename(), F->getDirectory());
     return NewFile->clone();
@@ -190,14 +228,15 @@ static TempMDNode copyNode(MDNode *N, int64_t Delta, bool Normalize,
 
 static std::unique_ptr<Module> translated(Module &M, DebugGraph &G,
                                           int64_t Delta, bool Normalize,
-                                          DIFile *NewFile) {
-  for (unsigned L : G.Lines)
-    if (!Normalize && !shift(L, Delta))
+                                          DIFile *MovingFile, DIFile *NewFile) {
+  for (size_t I = 0; I != G.Lines.size(); ++I)
+    if (!Normalize && sameFile(G.LineFiles[I], MovingFile) &&
+        !shift(G.Lines[I], Delta))
       return nullptr;
   ValueToValueMapTy VM;
   SmallVector<TempMDNode, 64> Temps;
   for (MDNode *N : G.Nodes) {
-    Temps.push_back(copyNode(N, Delta, Normalize, NewFile));
+    Temps.push_back(copyNode(N, Delta, Normalize, MovingFile, NewFile));
     VM.MD()[N].reset(Temps.back().get());
   }
   for (auto &T : Temps)
@@ -259,15 +298,52 @@ extern "C" LLVMModuleRef LLVMRustRelocationRefreshDebugInfo(
     return wrap(Optimized.release());
   }
   *Status = UnsupportedMapping;
-  if (OG.Files.size() != 1 || CG.Files.size() != 1 || PG.Files.size() != 1 ||
-      OG.Lines.size() != CG.Lines.size() || OG.Lines.empty())
+  if (OG.Files.size() != CG.Files.size() || OG.Lines.size() != CG.Lines.size() ||
+      OG.Lines.empty())
     return nullptr;
-  DIFile *OF = OG.Files.front(), *CF = CG.Files.front(), *PF = PG.Files.front();
-  if (OF->getFilename() != CF->getFilename() ||
-      OF->getDirectory() != CF->getDirectory() ||
-      OF->getFilename() != PF->getFilename() ||
-      OF->getDirectory() != PF->getDirectory() ||
-      OF->getChecksum() != PF->getChecksum() || OF->getSource() != PF->getSource())
+  auto FindFile = [](DebugGraph &G, DIFile *F) -> DIFile * {
+    DIFile *Found = nullptr;
+    for (DIFile *Candidate : G.Files)
+      if (sameFile(Candidate, F)) {
+        if (Found)
+          return nullptr;
+        Found = Candidate;
+      }
+    return Found;
+  };
+  DIFile *MovingFile = nullptr;
+  for (DIFile *F : OG.Files) {
+    DIFile *CF = FindFile(CG, F);
+    if (!CF || !FindFile(OG, F))
+      return nullptr;
+    if (!sameFileContents(F, CF)) {
+      if (MovingFile && !sameFile(MovingFile, F))
+        return nullptr;
+      MovingFile = F;
+    }
+  }
+  for (DIFile *F : PG.Files) {
+    DIFile *OF = FindFile(OG, F);
+    if (!OF || !sameFileContents(OF, F) || !FindFile(PG, F))
+      return nullptr;
+  }
+  for (size_t I = 0; I != OG.Lines.size(); ++I) {
+    if (!sameFile(OG.LineFiles[I], CG.LineFiles[I]))
+      return nullptr;
+    if (OG.Lines[I] != CG.Lines[I]) {
+      DIFile *F = OG.LineFiles[I];
+      if (!F || (MovingFile && !sameFile(MovingFile, F)))
+        return nullptr;
+      MovingFile = F;
+    }
+  }
+  if (!MovingFile)
+    for (DIFile *F : OG.LineFiles)
+      if (F) {
+        MovingFile = F;
+        break;
+      }
+  if (!MovingFile)
     return nullptr;
   std::optional<int64_t> Delta;
   for (size_t I = 0; I != OG.Lines.size(); ++I) {
@@ -278,18 +354,24 @@ extern "C" LLVMModuleRef LLVMRustRelocationRefreshDebugInfo(
       continue;
     }
     int64_t D = int64_t(B) - int64_t(A);
+    if (!sameFile(OG.LineFiles[I], MovingFile)) {
+      if (D != 0)
+        return nullptr;
+      continue;
+    }
     if (Delta && *Delta != D)
       return nullptr;
     Delta = D;
   }
   if (!Delta)
     return nullptr;
-  auto ON = translated(*Old, OG, 0, true, nullptr);
-  auto CN = translated(Current, CG, 0, true, nullptr);
+  DIFile *CurrentFile = FindFile(CG, MovingFile);
+  auto ON = translated(*Old, OG, 0, true, MovingFile, nullptr);
+  auto CN = translated(Current, CG, 0, true, CurrentFile, nullptr);
   if (!ON || !CN || serialize(*ON) != serialize(*CN))
     return nullptr;
   *Status = UnsupportedDebug;
-  auto Refreshed = translated(*Optimized, PG, *Delta, false, CF);
+  auto Refreshed = translated(*Optimized, PG, *Delta, false, MovingFile, CurrentFile);
   bool BrokenDebug = false;
   if (!Refreshed || verifyModule(*Refreshed, nullptr, &BrokenDebug) || BrokenDebug ||
       !sameSemantics(*Optimized, *Refreshed))

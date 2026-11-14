@@ -1,3 +1,7 @@
+#ifdef NDEBUG
+#error RelocationTest requires assertions; compile with -UNDEBUG
+#endif
+
 #include "Relocation.cpp"
 #include "llvm/AsmParser/Parser.h"
 #include "llvm/BinaryFormat/Dwarf.h"
@@ -7,7 +11,9 @@
 static std::unique_ptr<Module> fixture(LLVMContext &C, unsigned Line,
                                        unsigned BodyLine, StringRef Checksum,
                                        bool RuntimeChange = false,
-                                       bool Inline = false) {
+                                       bool Inline = false, bool Foreign = false,
+                                       bool ForeignChecksumChange = false,
+                                       bool Ambiguous = false) {
   std::string IR;
   raw_string_ostream OS(IR);
   OS << "source_filename = \"source.rs\"\n"
@@ -15,8 +21,8 @@ static std::unique_ptr<Module> fixture(LLVMContext &C, unsigned Line,
      << (RuntimeChange ? 2 : 1) << ", !dbg !8\n}\n"
         "!llvm.dbg.cu = !{!0}\n"
         "!llvm.module.flags = !{!9}\n"
-        "!0 = distinct !DICompileUnit(language: DW_LANG_Rust, file: !1, "
-        "producer: \"relocation-test\", isOptimized: false, runtimeVersion: 0, "
+        "!0 = distinct !DICompileUnit(language: DW_LANG_Rust, file: !"
+     << (Foreign ? 11 : 1) << ", producer: \"relocation-test\", isOptimized: false, runtimeVersion: 0, "
         "emissionKind: FullDebug)\n"
         "!1 = !DIFile(filename: \"source.rs\", directory: \"/\", "
         "checksumkind: CSK_MD5, checksum: \""
@@ -27,13 +33,27 @@ static std::unique_ptr<Module> fixture(LLVMContext &C, unsigned Line,
      << Line << ", type: !2, scopeLine: " << Line
      << ", spFlags: DISPFlagDefinition, unit: !0)\n"
         "!8 = !DILocation(line: "
-     << BodyLine << ", column: 1, scope: !4";
-  if (Inline)
+     << (Foreign ? 700 : BodyLine) << ", column: 1, scope: !"
+     << (Foreign ? 12 : 4);
+  if (Inline || Foreign)
     OS << ", inlinedAt: !10";
   OS << ")\n"
         "!9 = !{i32 2, !\"Debug Info Version\", i32 3}\n";
-  if (Inline)
-    OS << "!10 = !DILocation(line: " << Line << ", column: 2, scope: !4)\n";
+  if (Inline || Foreign)
+    OS << "!10 = !DILocation(line: " << (Foreign ? BodyLine : Line)
+       << ", column: 2, scope: !4)\n";
+  if (Foreign) {
+    OS << "!11 = !DIFile(filename: \"source.rs/@/cgu.0\", directory: \"/\")\n"
+          "!12 = distinct !DISubprogram(name: \"core_inline\", scope: !13, "
+          "file: !13, line: 600, type: !2, scopeLine: 600, "
+          "spFlags: DISPFlagDefinition, unit: !0)\n"
+          "!13 = !DIFile(filename: \""
+       << (Ambiguous ? "source.rs" : "core.rs")
+       << "\", directory: \"/\", checksumkind: CSK_MD5, checksum: \""
+       << (ForeignChecksumChange ? "33333333333333333333333333333333"
+                                 : "22222222222222222222222222222222")
+       << "\")\n";
+  }
   SMDiagnostic Diagnostic;
   auto M = parseAssemblyString(IR, Diagnostic, C);
   assert(M && !verifyModule(*M, &errs()));
@@ -73,6 +93,27 @@ int main() {
   assert(InlineResult && Status == Success);
   auto Loc = InlineResult->getFunction("f")->front().back().getDebugLoc();
   assert(Loc->getInlinedAt()->getLine() == 12);
+  auto MultiOld = fixture(C, 10, 11, A, false, false, true);
+  auto MultiCurrent = fixture(C, 12, 13, B, false, false, true);
+  auto MultiResult = run(*MultiOld, *MultiCurrent, *MultiOld, Status);
+  assert(MultiResult && Status == Success);
+  auto MultiLoc = MultiResult->getFunction("f")->front().back().getDebugLoc();
+  assert(MultiLoc.getLine() == 700);
+  assert(MultiLoc->getInlinedAt()->getLine() == 13);
+  assert(MultiLoc->getScope()->getSubprogram()->getLine() == 600);
+  assert(serialize(*MultiResult) == serialize(*MultiCurrent));
+  auto ForeignChanged = fixture(C, 12, 13, B, false, false, true, true);
+  assert(!run(*MultiOld, *ForeignChanged, *MultiOld, Status));
+  assert(Status == UnsupportedMapping);
+  auto Ambiguous = fixture(C, 12, 13, B, false, false, true, false, true);
+  assert(!run(*MultiOld, *Ambiguous, *MultiOld, Status));
+  assert(Status == UnsupportedMapping);
+  auto AmbiguousOld = fixture(C, 10, 11, A, false, false, true, false, true);
+  assert(!run(*AmbiguousOld, *Ambiguous, *AmbiguousOld, Status));
+  assert(Status == UnsupportedMapping);
+  auto OptimizedChanged = fixture(C, 10, 11, A, false, false, true, true);
+  assert(!run(*MultiOld, *MultiCurrent, *OptimizedChanged, Status));
+  assert(Status == UnsupportedMapping);
   auto NoDebugOld = CloneModule(*Old);
   auto NoDebugCurrent = CloneModule(*Current);
   StripDebugInfo(*NoDebugOld);
