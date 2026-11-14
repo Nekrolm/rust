@@ -48,6 +48,11 @@ class HarnessTests(unittest.TestCase):
             self.assertIsNone(report["fallback_fraction_of_all_cgus"])
             self.assertIsNone(report["eligible_candidates"])
 
+    def test_mixed_optimization_tokens_have_deterministic_summary(self):
+        rows = [{"compiler": "baseline", "debug": 0, "opt": opt, "case": "top",
+                 "exit_code": 0, "wall_seconds": 1} for opt in [0, "z"]]
+        self.assertEqual([row["opt"] for row in summarize(rows)], [0, "z"])
+
 
 if __name__ == "__main__":
     unittest.main()

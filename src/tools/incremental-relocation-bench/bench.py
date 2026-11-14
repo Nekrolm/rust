@@ -13,7 +13,7 @@ import subprocess
 import time
 
 
-CASES = ["noop", "touch", "top", "generic", "type", "bottom", "compensated", "body"]
+CASES = ["noop", "touch", "top", "generic", "function", "type", "bottom", "compensated", "body"]
 
 
 def edit(source, case, cfg):
@@ -25,7 +25,7 @@ def edit(source, case, cfg):
         pos = source.index(cfg["bottom_marker"]) if "bottom_marker" in cfg else source.rfind("\n}")
         assert pos >= 0
         return source[:pos] + "\n" + source[pos:]
-    marker = cfg["generic_marker" if case in ("generic", "compensated") else "type_marker"]
+    marker = cfg.get("function_marker", cfg.get("generic_marker")) if case in ("generic", "function", "compensated") else cfg["type_marker"]
     if case == "body":
         old, new = cfg["body_replace"]
         assert source.count(old) == 1
@@ -60,7 +60,7 @@ def summarize(records):
     return [{"compiler": k[0], "debug": k[1], "opt": k[2], "case": k[3],
              "n": len(v), "median_seconds": statistics.median(v),
              "min_seconds": min(v), "max_seconds": max(v),
-             "sufficient_repeated_samples": len(v) >= 5} for k, v in sorted(groups.items())]
+             "sufficient_repeated_samples": len(v) >= 5} for k, v in sorted(groups.items(), key=lambda item: tuple(map(str, item[0])))]
 
 
 def diagnostics(log):
@@ -107,7 +107,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("config", type=Path)
     parser.add_argument("--repeats", type=int, default=5)
-    parser.add_argument("--cases", nargs="+", choices=CASES, default=CASES)
+    parser.add_argument("--cases", nargs="+", choices=CASES, default=[case for case in CASES if case != "function"])
     parser.add_argument("--diagnostics", action="store_true")
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())
@@ -125,7 +125,7 @@ def main():
     metadata = {"config": cfg, "seed": cfg.get("seed", 1729),
                 "source_sha256": hashlib.sha256(original).hexdigest(),
                 "cargo_version": capture([cfg["cargo"], "-V"]),
-                "bevy_commit": capture(["git", "-C", cfg["bevy"], "rev-parse", "HEAD"]),
+                "repository_commit": capture(["git", "-C", cfg.get("repository", cfg.get("bevy")), "rev-parse", "HEAD"]),
                 "lockfile_sha256": hashlib.sha256(Path(cfg["manifest"]).with_name("Cargo.lock").read_bytes()).hexdigest(),
                 "compilers": {c["name"]: compiler_identity(cfg, c) for c in cfg["compilers"]}}
     (out / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
@@ -135,7 +135,7 @@ def main():
     try:
         for number, (repeat, debug, opt, case, compiler) in enumerate(trials):
             key = f'{compiler["name"]}-debug{debug}-opt{opt}'
-            target = out / "targets" / key
+            target = Path(cfg.get("target_root", out / "targets")) / key
             env = os.environ.copy()
             env.update(cfg.get("environment", {}))
             env.update(compiler.get("environment", {}))
@@ -147,11 +147,12 @@ def main():
             if args.diagnostics:
                 env.update(compiler.get("diagnostic_env", {}))
                 env["CARGO_ENCODED_RUSTFLAGS"] += "\x1f" + "\x1f".join(compiler.get("diagnostic_flags", []))
-            command = [cfg["cargo"], "build", "--locked", "--offline", "--manifest-path", cfg["manifest"]]
+            command = [cfg["cargo"], "build", "--locked", "--offline", "--manifest-path", cfg["manifest"], *cfg.get("cargo_args", [])]
+            cwd = cfg.get("cwd", str(Path(cfg["manifest"]).parent))
             stem = f'{number:05d}-{key}-{case}-r{repeat}'
             source_path.write_bytes(original)
             with (out / (stem + "-prime.log")).open("w") as log:
-                prime = subprocess.run(command, env=env, stdout=log, stderr=subprocess.STDOUT)
+                prime = subprocess.run(command, env=env, cwd=cwd, stdout=log, stderr=subprocess.STDOUT)
             if prime.returncode:
                 row = {"compiler": compiler["name"], "debug": debug, "opt": opt,
                        "case": case, "repeat": repeat, "wall_seconds": None,
@@ -168,7 +169,7 @@ def main():
                 source_path.write_text(edit(source, case, cfg))
             with (out / (stem + ".log")).open("w") as log:
                 start = time.perf_counter()
-                build = subprocess.Popen(command, env=env, stdout=log, stderr=subprocess.STDOUT)
+                build = subprocess.Popen(command, env=env, cwd=cwd, stdout=log, stderr=subprocess.STDOUT)
                 _, status, usage = os.wait4(build.pid, 0)
                 build.returncode = os.waitstatus_to_exitcode(status)
                 elapsed = time.perf_counter() - start

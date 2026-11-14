@@ -28,6 +28,15 @@ on failure. Run only in an exclusive window without compiler builds or other
 benchmarks. Run one harness instance per source checkout; the output lock does
 not coordinate separate output directories.
 
+For another Cargo workspace, set `repository`, `cwd`, and `cargo_args` to pin its
+repository and select packages/targets. Optimization tokens such as `"z"` are
+accepted. `--cases ... function ...` and `function_marker` cover an ordinary
+function without labeling it generic. `target_root` can share primed targets
+between sequential edit campaigns against the same baseline workspace; each
+compiler/option set still has its own target directory. Never run those campaigns
+concurrently. Keep private repository configurations and results outside public
+source trees.
+
 The cases cover no change, touch, top/generic/type/bottom line insertion, one
 compensated movement, and an iterator-body change. The example configuration
 targets the consumer's instantiated `QueryState::iter` method. The compensated case inserts
