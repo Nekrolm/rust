@@ -32,12 +32,12 @@
       "rustc": "/workspace/work/toolchains/1.100.0/bin/rustc"
     }
   ],
-  "generic_marker": "    pub fn matched_tables(&self)",
+  "generic_marker": "    pub fn iter<'w, 's>(&'s mut self, world: &'w World)",
   "type_marker": "pub struct QueryState<D:",
   "bottom_marker": "impl<D: QueryData, F: QueryFilter> From<QueryBuilder<'_, D, F>>",
-  "compensated_end_marker": "    /// Returns the archetypes matched by this query.",
+  "compensated_end_marker": "    /// Returns an [`Iterator`] over the query results for the given [`World`].\n    ///\n    /// This iterator is always guaranteed",
   "body_replace": [
-    "self.matched_tables.ones().map(TableId::from_usize)",
-    "self.matched_tables.ones().rev().map(TableId::from_usize)"
+    "self.query(world).into_iter()",
+    "self.query_manual(world).into_iter()"
   ]
 }

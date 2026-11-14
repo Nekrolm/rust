@@ -29,11 +29,12 @@ benchmarks. Run one harness instance per source checkout; the output lock does
 not coordinate separate output directories.
 
 The cases cover no change, touch, top/generic/type/bottom line insertion, one
-compensated movement, and an iterator-body change. The compensated case inserts
-one line before the generic method and removes one after it, leaving subsequent
+compensated movement, and an iterator-body change. The example configuration
+targets the consumer's instantiated `QueryState::iter` method. The compensated case inserts
+one line before that method and removes one after it, leaving subsequent
 declarations at their original lines. Debug profiles cover 0, line tables, full,
-and full with optimization level 1. The body case reverses table iteration; this
-is an invalidation control rather than a behavior-preserving edit.
+and full with optimization level 1. The body case switches `query` to `query_manual`,
+changing archetype refresh behavior as an invalidation control.
 
 Raw JSONL includes failures, wall time, Linux `wait4` maximum RSS, and the sum of
 dependency rlib sizes. RSS is the maximum reported for the waited process and its

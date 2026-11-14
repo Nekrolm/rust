@@ -1,0 +1,90 @@
+[
+  {
+    "compiler": "official-1.100.0",
+    "debug": 0,
+    "opt": 0,
+    "case": "body",
+    "n": 5,
+    "median_seconds": 2.308148643999857,
+    "min_seconds": 2.1069204230000196,
+    "max_seconds": 2.7108738089999633,
+    "sufficient_repeated_samples": true
+  },
+  {
+    "compiler": "official-1.100.0",
+    "debug": 0,
+    "opt": 0,
+    "case": "bottom",
+    "n": 5,
+    "median_seconds": 2.566156043000092,
+    "min_seconds": 2.0465581809999094,
+    "max_seconds": 2.755125272999976,
+    "sufficient_repeated_samples": true
+  },
+  {
+    "compiler": "official-1.100.0",
+    "debug": 0,
+    "opt": 0,
+    "case": "compensated",
+    "n": 5,
+    "median_seconds": 2.5359468100000413,
+    "min_seconds": 2.0544477459998234,
+    "max_seconds": 2.9468688529998417,
+    "sufficient_repeated_samples": true
+  },
+  {
+    "compiler": "official-1.100.0",
+    "debug": 0,
+    "opt": 0,
+    "case": "generic",
+    "n": 5,
+    "median_seconds": 2.3643690360000846,
+    "min_seconds": 2.2669400339998447,
+    "max_seconds": 2.418239488999916,
+    "sufficient_repeated_samples": true
+  },
+  {
+    "compiler": "official-1.100.0",
+    "debug": 0,
+    "opt": 0,
+    "case": "noop",
+    "n": 5,
+    "median_seconds": 0.04941168400000606,
+    "min_seconds": 0.04658727099990756,
+    "max_seconds": 0.050394731000096726,
+    "sufficient_repeated_samples": true
+  },
+  {
+    "compiler": "official-1.100.0",
+    "debug": 0,
+    "opt": 0,
+    "case": "top",
+    "n": 5,
+    "median_seconds": 2.3485230789999605,
+    "min_seconds": 2.15133627299997,
+    "max_seconds": 2.434684701999913,
+    "sufficient_repeated_samples": true
+  },
+  {
+    "compiler": "official-1.100.0",
+    "debug": 0,
+    "opt": 0,
+    "case": "touch",
+    "n": 5,
+    "median_seconds": 1.9223830539999653,
+    "min_seconds": 1.7298526480001328,
+    "max_seconds": 3.3177840149999156,
+    "sufficient_repeated_samples": true
+  },
+  {
+    "compiler": "official-1.100.0",
+    "debug": 0,
+    "opt": 0,
+    "case": "type",
+    "n": 5,
+    "median_seconds": 2.498440128000084,
+    "min_seconds": 2.208258719000014,
+    "max_seconds": 3.71507751199988,
+    "sufficient_repeated_samples": true
+  }
+]

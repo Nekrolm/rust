@@ -1,0 +1,25 @@
+{
+  "system": {
+    "system": "Linux",
+    "node": "60a25642940a",
+    "release": "6.18.57",
+    "version": "#1 SMP Tue Oct 20 21:56:04 UTC 2026",
+    "machine": "x86_64",
+    "processor": ""
+  },
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "cpu_models": [
+    "AMD EPYC 9V74 80-Core Processor"
+  ],
+  "final_rlib_bytes": 77875332,
+  "final_rlib_count": 49,
+  "final_executable_bytes": 2842000,
+  "rust_archive_sha256": "98ee6bec240e1cfe944f17e7092412dc5ef6e008484bb668c6936d35a7d15acd",
+  "artifact_metric_note": "Per-sample raw artifact_bytes=0 is invalid due initial harness assumption of pre-1.100 Cargo layout. Final artifact measurement uses recursive rlib discovery. Timings and RSS unaffected."
+}
