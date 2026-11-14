@@ -61,7 +61,8 @@ Existing regression tests make the distinction explicit:
 * `tests/incremental/spans_significant_w_panic.rs` expects code generation when
   the moved function contains a panic location, even without debug information.
 
-These are source-level observations, not results of running those tests here.
+The backend validation section below records execution of these tests with the
+built experimental compiler.
 
 ## Separate semantic identity from placement
 
