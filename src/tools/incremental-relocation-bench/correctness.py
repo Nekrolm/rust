@@ -62,7 +62,7 @@ def main():
     original = SOURCE.replace("\n", "\r\n") if args.crlf else SOURCE
     newline = "\r\n" if args.crlf else "\n"
     for debug in (0, 1, 2):
-        flags = ["--edition=2024", "-Copt-level=1", "-Coverflow-checks=yes", f"-Cdebuginfo={debug}", "-Ccodegen-units=4", "-Cembed-bitcode=no", *args.flag]
+        flags = ["--edition=2024", "-Copt-level=1", "-Coverflow-checks=yes", f"-Cdebuginfo={debug}", "-Ccodegen-units=4", "-Clto=off", "-Cembed-bitcode=no", *args.flag]
         incremental = output / f"incremental-debug{debug}"
         binary = output / f"moved-debug{debug}"
         clean = output / f"clean-debug{debug}"

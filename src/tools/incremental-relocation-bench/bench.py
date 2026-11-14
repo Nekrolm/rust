@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import random
+import re
 import statistics
 import subprocess
 import time
@@ -66,7 +67,9 @@ def summarize(records):
 def diagnostics(log):
     events = []
     writes = collections.Counter()
-    for line in log.read_text().splitlines():
+    text = log.read_text()
+    cargo_compilation_seen = bool(re.search(r"^\s*Compiling ", text, re.MULTILINE))
+    for line in text.splitlines():
         if line.startswith("rustc-relocation: "):
             event = json.loads(line.removeprefix("rustc-relocation: "))
             assert event["schema"] == 1
@@ -94,7 +97,9 @@ def diagnostics(log):
         candidates += event["count"] if event.get("candidate") else 0
         if event.get("candidate") and event["outcome"] == "fallback":
             candidate_fallbacks += event["count"]
-    return {"total_cgu_events": count, "outcomes": dict(outcomes), "reasons": dict(reasons),
+    return {"report_status": "reported" if count else "missing" if cargo_compilation_seen else "no_cargo_compilation_seen",
+            "cargo_compilation_seen": cargo_compilation_seen,
+            "total_cgu_events": count, "outcomes": dict(outcomes), "reasons": dict(reasons),
             "skipped": dict(skipped), "eligible_candidates": eligible if eligibility_known and count else None,
             "supported_dirty_candidates": candidates if candidates_known and count else None,
             "candidate_fallbacks": candidate_fallbacks if candidates_known and count else None,
