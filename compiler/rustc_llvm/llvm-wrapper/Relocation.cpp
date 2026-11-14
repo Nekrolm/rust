@@ -198,7 +198,7 @@ static std::unique_ptr<Module> translated(Module &M, DebugGraph &G,
   SmallVector<TempMDNode, 64> Temps;
   for (MDNode *N : G.Nodes) {
     Temps.push_back(copyNode(N, Delta, Normalize, NewFile));
-    VM.MD()[N] = Temps.back().get();
+    VM.MD()[N].reset(Temps.back().get());
   }
   for (auto &T : Temps)
     for (unsigned I = 0; I != T->getNumOperands(); ++I) {
@@ -212,7 +212,7 @@ static std::unique_ptr<Module> translated(Module &M, DebugGraph &G,
       N = MDNode::replaceWithDistinct(std::move(Temps[I]));
     else
       N = MDNode::replaceWithUniqued(std::move(Temps[I]));
-    VM.MD()[G.Nodes[I]] = N;
+    VM.MD()[G.Nodes[I]].reset(N);
   }
   for (auto &Entry : VM.MD())
     if (auto *N = dyn_cast_or_null<MDNode>(Entry.second.get()))
@@ -230,7 +230,8 @@ static std::unique_ptr<Module> parse(const uint8_t *Data, size_t Len,
     consumeError(Result.takeError());
     return nullptr;
   }
-  if (verifyModule(**Result, nullptr))
+  bool BrokenDebug = false;
+  if (verifyModule(**Result, nullptr, &BrokenDebug) || BrokenDebug)
     return nullptr;
   return std::move(*Result);
 }
@@ -289,7 +290,8 @@ extern "C" LLVMModuleRef LLVMRustRelocationRefreshDebugInfo(
     return nullptr;
   *Status = UnsupportedDebug;
   auto Refreshed = translated(*Optimized, PG, *Delta, false, CF);
-  if (!Refreshed || verifyModule(*Refreshed, nullptr) ||
+  bool BrokenDebug = false;
+  if (!Refreshed || verifyModule(*Refreshed, nullptr, &BrokenDebug) || BrokenDebug ||
       !sameSemantics(*Optimized, *Refreshed))
     return nullptr;
   *Status = Success;

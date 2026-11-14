@@ -1,5 +1,6 @@
 #include "Relocation.cpp"
 #include "llvm/AsmParser/Parser.h"
+#include "llvm/BinaryFormat/Dwarf.h"
 #include "llvm/Support/SourceMgr.h"
 #include <cassert>
 
@@ -54,8 +55,12 @@ int main() {
   auto Old = fixture(C, 10, 11, A);
   auto Current = fixture(C, 12, 13, B);
   uint32_t Status;
+  auto OriginalBytes = serialize(*Old);
+  auto CurrentBytes = serialize(*Current);
   auto Result = run(*Old, *Current, *Old, Status);
   assert(Result && Status == Success);
+  assert(serialize(*Old) == OriginalBytes);
+  assert(serialize(*Current) == CurrentBytes);
   DebugGraph RG(*Result);
   assert(RG.Files.front()->getChecksum() ==
          DebugGraph(*Current).Files.front()->getChecksum());
@@ -77,6 +82,18 @@ int main() {
   auto SemanticChange = fixture(C, 12, 13, B, true);
   assert(!run(*Old, *SemanticChange, *Old, Status));
   assert(Status == SemanticDifference);
+  auto FlagsChanged = fixture(C, 12, 13, B);
+  FlagsChanged->addModuleFlag(Module::Warning, "relocation-test-flag", 1);
+  assert(!run(*Old, *FlagsChanged, *Old, Status));
+  assert(Status == SemanticDifference);
+  auto Overflow = fixture(C, 10, std::numeric_limits<unsigned>::max(), A);
+  assert(!run(*Old, *Current, *Overflow, Status));
+  assert(Status == UnsupportedDebug);
+  auto Unknown = fixture(C, 12, 13, B);
+  Unknown->getOrInsertNamedMetadata("relocation.unknown")
+      ->addOperand(GenericDINode::get(C, dwarf::DW_TAG_variable, "unknown", {}));
+  assert(!run(*Old, *Unknown, *Old, Status));
+  assert(Status == UnsupportedDebug);
   auto Nonuniform = fixture(C, 12, 14, B);
   assert(!run(*Old, *Nonuniform, *Old, Status));
   assert(Status == UnsupportedMapping);
@@ -92,4 +109,6 @@ int main() {
       wrap(Current.get()), reinterpret_cast<const uint8_t *>(Bytes.data()), 3,
       reinterpret_cast<const uint8_t *>(Bytes.data()), Bytes.size(), &Status));
   assert(Status == MalformedModule);
+  assert(serialize(*Old) == OriginalBytes);
+  assert(serialize(*Current) == CurrentBytes);
 }
