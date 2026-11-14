@@ -99,9 +99,9 @@ pub(super) fn prepare(
     } else {
         attempt.input = Some(bitcode(&module.module_llvm));
         match load(cgcx, module) {
-            Ok(()) => {
+            Ok(reason) => {
                 attempt.reused = true;
-                "validated_debug_refresh"
+                reason
             }
             Err(reason) => reason,
         }
@@ -116,7 +116,10 @@ pub(super) fn prepare(
     attempt
 }
 
-fn load(cgcx: &CodegenContext, module: &mut ModuleCodegen<ModuleLlvm>) -> Result<(), &'static str> {
+fn load(
+    cgcx: &CodegenContext,
+    module: &mut ModuleCodegen<ModuleLlvm>,
+) -> Result<&'static str, &'static str> {
     let old_directory = cgcx.relocation_old_directory.as_ref().ok_or("no_prior_manifest")?;
     let file = fs::File::open(old_directory.join(format!("{}.relocation", module.name)))
         .map_err(|_| "no_prior_manifest")?;
@@ -133,14 +136,18 @@ fn load(cgcx: &CodegenContext, module: &mut ModuleCodegen<ModuleLlvm>) -> Result
     if manifest.binding() != &binding(cgcx, &module.name) {
         return Err("manifest_binding_mismatch");
     }
-    module.module_llvm.try_relocate(manifest.canonical_input(), manifest.artifact()).map_err(
-        |status| match status {
+    module
+        .module_llvm
+        .try_relocate(manifest.canonical_input(), manifest.artifact())
+        .map(
+            |status| if status == 5 { "validated_identical_ir" } else { "validated_debug_refresh" },
+        )
+        .map_err(|status| match status {
             1 => "semantic_ir_differs",
             2 => "source_mapping_unsupported",
             3 => "debug_rewrite_unsupported",
             _ => "malformed_bitcode",
-        },
-    )
+        })
 }
 
 impl RelocationAttempt {

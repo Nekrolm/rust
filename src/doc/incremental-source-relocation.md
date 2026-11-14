@@ -317,6 +317,14 @@ unchanged; inline callee and call-site lines are mapped by their respective file
 Requested debug outputs and runtime location constants remain inputs; rejected
 cases take the normal backend path.
 
+For modules genuinely containing no debug information, an additional path requires
+exact equality of the entire old and current pre-optimization bitcode, retaining
+all metadata. It returns the verified cached optimized module unchanged. This
+path reports `validated_identical_ir`; it skips LLVM optimization only. An ordinary
+no-debug source move can already be green under rustc's dependency checks, in
+which case ordinary reuse takes precedence and this comparison never runs.
+Location-bearing constants such as `line!()` remain part of the exact comparison.
+
 Manifests bind compiler/cache version, target, tracked session options, and CGU
 identity. They contain exact pre-optimization and optimized bitcode plus a stable
 128-bit checksum for accidental corruption detection. They are trusted compiler
@@ -339,7 +347,8 @@ Fallback reasons include `disabled`, `unsupported_compiler_identity`,
 `unsupported_output`, `unsupported_instrumentation`, `no_prior_manifest`,
 `malformed_manifest`, `manifest_oversize`, `manifest_io_failure`, `manifest_binding_mismatch`, `semantic_ir_differs`,
 `source_mapping_unsupported`, `debug_rewrite_unsupported`, and `malformed_bitcode`.
-Acceptance uses `validated_debug_refresh` and `skipped=llvm_optimization`.
+Acceptance uses `validated_debug_refresh` or `validated_identical_ir`, with
+`skipped=llvm_optimization`.
 Separate `cache_write` events report `written`, `carried`, `manifest_oversize`, or
 `manifest_io_failure`; exclude those lifecycle events from CGU denominators.
 Reporting is opt-in and contains no source text, paths, or per-item identifiers.

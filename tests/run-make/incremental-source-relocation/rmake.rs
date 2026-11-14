@@ -64,6 +64,27 @@ fn main() {
     build("runtime-line-clean", &[]);
     assert_eq!(incremental_object, rfs::read("sample.o"));
 
+    rfs::write("sample.rs", SOURCE);
+    build("no-debug", &["-Cdebuginfo=0"]);
+    rfs::write("sample.rs", format!("\n{SOURCE}"));
+    let no_debug = build("no-debug", &["-Cdebuginfo=0"]);
+    assert!(
+        no_debug.contains("\"reason\":\"validated_identical_ir\"")
+            || no_debug.contains("\"reason\":\"green_post_lto\""),
+        "{no_debug}",
+    );
+    let incremental_object = rfs::read("sample.o");
+    build("no-debug-clean", &["-Cdebuginfo=0"]);
+    assert_eq!(incremental_object, rfs::read("sample.o"));
+
+    rfs::write("sample.rs", &runtime_line);
+    build("no-debug-line", &["-Cdebuginfo=0"]);
+    rfs::write("sample.rs", format!("\n{runtime_line}"));
+    assert_reason(&build("no-debug-line", &["-Cdebuginfo=0"]), "semantic_ir_differs");
+    let incremental_object = rfs::read("sample.o");
+    build("no-debug-line-clean", &["-Cdebuginfo=0"]);
+    assert_eq!(incremental_object, rfs::read("sample.o"));
+
     assert_reason(&build("unsupported", &["-Cembed-bitcode=yes"]), "unsupported_output");
     assert_reason(&build("disabled", &["-Zincremental-source-relocation=no"]), "disabled");
 
