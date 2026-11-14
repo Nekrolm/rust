@@ -1,12 +1,12 @@
 {
-  "bevy": "/workspace/work/bevy-relocation-benchmark",
-  "manifest": "/workspace/work/relocation-consumer/Cargo.toml",
-  "edited_source": "/workspace/work/bevy-relocation-benchmark/crates/bevy_ecs/src/query/state.rs",
-  "cargo": "/workspace/work/toolchains/1.100.0/bin/cargo",
+  "bevy": "/absolute/path/to/bevy",
+  "manifest": "/absolute/path/to/consumer/Cargo.toml",
+  "edited_source": "/absolute/path/to/bevy/crates/bevy_ecs/src/query/state.rs",
+  "cargo": "/absolute/path/to/cargo-1.100.0/bin/cargo",
   "environment": {
-    "CARGO_HOME": "/workspace/work/cargo-home"
+    "CARGO_HOME": "/absolute/path/to/cargo-home"
   },
-  "output": "/work/results/controlled",
+  "output": "/absolute/path/to/results/controlled",
   "jobs": 1,
   "profiles": [
     [

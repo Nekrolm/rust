@@ -1,0 +1,87 @@
+{
+  "compiler_commit": "6dd88db2949b3173124de6f722f362678388e0d8",
+  "samples_per_edit": 1,
+  "timings_are_overlapping_nonadditive_untimed_diagnostics": true,
+  "flags": [
+    "-Zincremental-source-relocation",
+    "-Zincremental-relocation-report",
+    "-Ztime-passes",
+    "-Clto=off",
+    "-Cembed-bitcode=no"
+  ],
+  "profile": {
+    "debug": 0,
+    "opt_level": "z",
+    "codegen_units": 64,
+    "cargo_jobs": 4
+  },
+  "observations": [
+    {
+      "edit": "UI top insertion",
+      "target": "Native entrypoint",
+      "reported_phase_seconds": {
+        "codegen_to_LLVM_IR": 0.0,
+        "codegen_crate": 0.022,
+        "LLVM_passes": 0.001,
+        "link_binary": 7.328,
+        "total": 7.822
+      }
+    },
+    {
+      "edit": "UI top insertion",
+      "target": "Main library",
+      "reported_phase_seconds": {
+        "codegen_to_LLVM_IR": 6.958,
+        "codegen_crate": 9.677,
+        "LLVM_passes": 9.7,
+        "link_binary": 0.043,
+        "total": 19.877
+      }
+    },
+    {
+      "edit": "Scene top insertion",
+      "target": "Main library",
+      "reported_phase_seconds": {
+        "codegen_to_LLVM_IR": 3.083,
+        "codegen_crate": 3.275,
+        "LLVM_passes": 3.24,
+        "link_binary": 0.08,
+        "total": 13.084
+      }
+    },
+    {
+      "edit": "Scene top insertion",
+      "target": "UI support library",
+      "reported_phase_seconds": {
+        "codegen_to_LLVM_IR": 0.0,
+        "codegen_crate": 0.027,
+        "LLVM_passes": 0.027,
+        "link_binary": 0.011,
+        "total": 0.911
+      }
+    },
+    {
+      "edit": "Scene top insertion",
+      "target": "Scene library",
+      "reported_phase_seconds": {
+        "codegen_to_LLVM_IR": 0.531,
+        "codegen_crate": 0.604,
+        "LLVM_passes": 3.793,
+        "copy_all_cgu_workproducts_to_incr_comp_cache_dir": 0.017,
+        "link_binary": 0.013,
+        "total": 6.334
+      }
+    },
+    {
+      "edit": "Scene top insertion",
+      "target": "Native entrypoint",
+      "reported_phase_seconds": {
+        "codegen_to_LLVM_IR": 0.0,
+        "codegen_crate": 0.031,
+        "LLVM_passes": 0.001,
+        "link_binary": 7.133,
+        "total": 7.337
+      }
+    }
+  ]
+}

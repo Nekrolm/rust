@@ -1,0 +1,1151 @@
+{
+  "workload": "seabattles-rogue",
+  "source_snapshot": "Before the types-forward layout change",
+  "workload_kind": "Full native executable",
+  "completed_timed_samples": 150,
+  "expected_timed_samples": 150,
+  "successful_samples_per_cell": 5,
+  "profile": {
+    "debug": 0,
+    "opt_level": "z",
+    "codegen_units": 64,
+    "dependency_opt_level": "z",
+    "dependency_codegen_units": 1,
+    "lto": "off",
+    "embed_bitcode": false,
+    "cargo_jobs": 4
+  },
+  "host": {
+    "cpu": "AMD EPYC 9V74",
+    "affinity_logical_cpus": 5,
+    "effective_cgroup_cpu_quota": 4,
+    "linux": "6.18.57",
+    "glibc": "2.41"
+  },
+  "configuration_comparison_caveat": "Cargo compiler/flags identity can change crate disambiguators and CGU partitioning; these game comparisons do not exclusively isolate reuse.",
+  "workloads": {
+    "sb-game (UI source)": {
+      "timed_samples": 75,
+      "cells": [
+        {
+          "compiler": "official-1.100.0",
+          "case": "body",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 7.746473746999982,
+            "min": 6.941731874998368,
+            "max": 7.895232382001268
+          },
+          "peak_rss_kib": {
+            "median": 1320604,
+            "min": 1317192,
+            "max": 1322504
+          },
+          "artifact_bytes": {
+            "median": 1017574700,
+            "min": 1017574700,
+            "max": 1017574748
+          }
+        },
+        {
+          "compiler": "official-1.100.0",
+          "case": "noop",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 0.2564227410002786,
+            "min": 0.25084289699952933,
+            "max": 0.83785157300008
+          },
+          "peak_rss_kib": {
+            "median": 107968,
+            "min": 107780,
+            "max": 108448
+          },
+          "artifact_bytes": {
+            "median": 1017574700,
+            "min": 1017574700,
+            "max": 1017574748
+          }
+        },
+        {
+          "compiler": "official-1.100.0",
+          "case": "top",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 20.945610315000522,
+            "min": 18.9234929689992,
+            "max": 21.20045713199943
+          },
+          "peak_rss_kib": {
+            "median": 2064324,
+            "min": 2060656,
+            "max": 2072196
+          },
+          "artifact_bytes": {
+            "median": 1017574700,
+            "min": 1017574700,
+            "max": 1017574700
+          }
+        },
+        {
+          "compiler": "official-1.100.0",
+          "case": "touch",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 6.434247223998682,
+            "min": 5.815694458000507,
+            "max": 7.831573701998423
+          },
+          "peak_rss_kib": {
+            "median": 1213220,
+            "min": 1212164,
+            "max": 1220732
+          },
+          "artifact_bytes": {
+            "median": 1017574700,
+            "min": 1017574700,
+            "max": 1017574700
+          }
+        },
+        {
+          "compiler": "official-1.100.0",
+          "case": "type",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 20.365452092999476,
+            "min": 19.442265251997014,
+            "max": 21.068765076001
+          },
+          "peak_rss_kib": {
+            "median": 2074716,
+            "min": 2065324,
+            "max": 2078808
+          },
+          "artifact_bytes": {
+            "median": 1017574748,
+            "min": 1017574748,
+            "max": 1017574748
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "body",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 14.515862735002884,
+            "min": 13.176976520000608,
+            "max": 15.692035547999694
+          },
+          "peak_rss_kib": {
+            "median": 1337152,
+            "min": 1333620,
+            "max": 1342788
+          },
+          "artifact_bytes": {
+            "median": 901245296,
+            "min": 901245296,
+            "max": 901245296
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "noop",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 0.25099882500217063,
+            "min": 0.2413620670013188,
+            "max": 0.25480456899822457
+          },
+          "peak_rss_kib": {
+            "median": 108336,
+            "min": 107936,
+            "max": 108560
+          },
+          "artifact_bytes": {
+            "median": 901245296,
+            "min": 901245296,
+            "max": 901245296
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "top",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 26.945405087000836,
+            "min": 25.234011430002283,
+            "max": 28.376090121000743
+          },
+          "peak_rss_kib": {
+            "median": 2478844,
+            "min": 2440052,
+            "max": 2538192
+          },
+          "artifact_bytes": {
+            "median": 901245296,
+            "min": 901245296,
+            "max": 901245296
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "touch",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 12.174009512000339,
+            "min": 11.000732863998564,
+            "max": 12.330573342002026
+          },
+          "peak_rss_kib": {
+            "median": 1203632,
+            "min": 1187688,
+            "max": 1205920
+          },
+          "artifact_bytes": {
+            "median": 901245296,
+            "min": 901245296,
+            "max": 901245296
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "type",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 27.144320405001054,
+            "min": 26.209051092002483,
+            "max": 28.703755332000583
+          },
+          "peak_rss_kib": {
+            "median": 2487572,
+            "min": 2444508,
+            "max": 2552284
+          },
+          "artifact_bytes": {
+            "median": 901245296,
+            "min": 901245296,
+            "max": 901245296
+          }
+        },
+        {
+          "compiler": "unpatched-0fd799",
+          "case": "body",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 13.153178416003357,
+            "min": 12.169933363999007,
+            "max": 14.086324418000004
+          },
+          "peak_rss_kib": {
+            "median": 1305884,
+            "min": 1291868,
+            "max": 1319268
+          },
+          "artifact_bytes": {
+            "median": 901232202,
+            "min": 901232202,
+            "max": 901232202
+          }
+        },
+        {
+          "compiler": "unpatched-0fd799",
+          "case": "noop",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 0.24813130300026387,
+            "min": 0.22737566900104866,
+            "max": 0.29870553399814526
+          },
+          "peak_rss_kib": {
+            "median": 108352,
+            "min": 107960,
+            "max": 108496
+          },
+          "artifact_bytes": {
+            "median": 901232202,
+            "min": 901232202,
+            "max": 901232202
+          }
+        },
+        {
+          "compiler": "unpatched-0fd799",
+          "case": "top",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 29.6513290719995,
+            "min": 28.95242543999848,
+            "max": 31.70358775999921
+          },
+          "peak_rss_kib": {
+            "median": 2225944,
+            "min": 2151920,
+            "max": 2290396
+          },
+          "artifact_bytes": {
+            "median": 901232202,
+            "min": 901232202,
+            "max": 901232202
+          }
+        },
+        {
+          "compiler": "unpatched-0fd799",
+          "case": "touch",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 12.589279142001033,
+            "min": 12.017319372000202,
+            "max": 13.165452051998727
+          },
+          "peak_rss_kib": {
+            "median": 1188248,
+            "min": 1174676,
+            "max": 1193228
+          },
+          "artifact_bytes": {
+            "median": 901232202,
+            "min": 901232202,
+            "max": 901232202
+          }
+        },
+        {
+          "compiler": "unpatched-0fd799",
+          "case": "type",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 31.273979191999388,
+            "min": 29.728496248000738,
+            "max": 32.250181239000085
+          },
+          "peak_rss_kib": {
+            "median": 2174332,
+            "min": 2131664,
+            "max": 2207652
+          },
+          "artifact_bytes": {
+            "median": 901232202,
+            "min": 901232202,
+            "max": 901232202
+          }
+        }
+      ],
+      "untimed_diagnostic_samples_per_case": 1,
+      "diagnostics": [
+        {
+          "compiler": "patched-b533f146",
+          "case": "touch",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 2,
+            "cargo_report_lines_ignored": 134,
+            "total_cgu_events": 67,
+            "outcomes": {
+              "ordinary_reuse": 67
+            },
+            "reasons": {
+              "green_post_lto": 67
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 67
+            },
+            "eligible_candidates": 0,
+            "supported_dirty_candidates": 0,
+            "candidate_fallbacks": 0,
+            "fallback_fraction_of_supported_candidates": null,
+            "cache_writes": {
+              "carried": 67
+            },
+            "fallback_fraction_of_all_cgus": 0.0
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "top",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 2,
+            "cargo_report_lines_ignored": 134,
+            "total_cgu_events": 67,
+            "outcomes": {
+              "ordinary_reuse": 55,
+              "fallback": 6,
+              "accepted": 6
+            },
+            "reasons": {
+              "green_post_lto": 55,
+              "semantic_ir_differs": 5,
+              "validated_identical_ir": 6,
+              "debug_rewrite_unsupported": 1
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 55,
+              "none": 6,
+              "llvm_optimization": 6
+            },
+            "eligible_candidates": 6,
+            "supported_dirty_candidates": 12,
+            "candidate_fallbacks": 6,
+            "fallback_fraction_of_supported_candidates": 0.5,
+            "cache_writes": {
+              "carried": 55,
+              "written": 12
+            },
+            "fallback_fraction_of_all_cgus": 0.08955223880597014
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "compensated",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 2,
+            "cargo_report_lines_ignored": 134,
+            "total_cgu_events": 67,
+            "outcomes": {
+              "ordinary_reuse": 67
+            },
+            "reasons": {
+              "green_post_lto": 67
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 67
+            },
+            "eligible_candidates": 0,
+            "supported_dirty_candidates": 0,
+            "candidate_fallbacks": 0,
+            "fallback_fraction_of_supported_candidates": null,
+            "cache_writes": {
+              "carried": 67
+            },
+            "fallback_fraction_of_all_cgus": 0.0
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "body",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 2,
+            "cargo_report_lines_ignored": 134,
+            "total_cgu_events": 67,
+            "outcomes": {
+              "ordinary_reuse": 66,
+              "fallback": 1
+            },
+            "reasons": {
+              "green_post_lto": 66,
+              "semantic_ir_differs": 1
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 66,
+              "none": 1
+            },
+            "eligible_candidates": 0,
+            "supported_dirty_candidates": 1,
+            "candidate_fallbacks": 1,
+            "fallback_fraction_of_supported_candidates": 1.0,
+            "cache_writes": {
+              "carried": 66,
+              "written": 1
+            },
+            "fallback_fraction_of_all_cgus": 0.014925373134328358
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "type",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 2,
+            "cargo_report_lines_ignored": 134,
+            "total_cgu_events": 67,
+            "outcomes": {
+              "ordinary_reuse": 56,
+              "fallback": 5,
+              "accepted": 6
+            },
+            "reasons": {
+              "green_post_lto": 56,
+              "semantic_ir_differs": 4,
+              "validated_identical_ir": 6,
+              "debug_rewrite_unsupported": 1
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 56,
+              "none": 5,
+              "llvm_optimization": 6
+            },
+            "eligible_candidates": 6,
+            "supported_dirty_candidates": 11,
+            "candidate_fallbacks": 5,
+            "fallback_fraction_of_supported_candidates": 0.45454545454545453,
+            "cache_writes": {
+              "carried": 56,
+              "written": 11
+            },
+            "fallback_fraction_of_all_cgus": 0.07462686567164178
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "noop",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "no_rustc_invocation",
+            "cargo_compilation_seen": false,
+            "captured_rustc_invocations": 0,
+            "cargo_report_lines_ignored": 134,
+            "total_cgu_events": 0,
+            "outcomes": {},
+            "reasons": {},
+            "skipped": {},
+            "eligible_candidates": null,
+            "supported_dirty_candidates": null,
+            "candidate_fallbacks": null,
+            "fallback_fraction_of_supported_candidates": null,
+            "cache_writes": {},
+            "fallback_fraction_of_all_cgus": null
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "bottom",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 2,
+            "cargo_report_lines_ignored": 134,
+            "total_cgu_events": 67,
+            "outcomes": {
+              "ordinary_reuse": 66,
+              "fallback": 1
+            },
+            "reasons": {
+              "green_post_lto": 66,
+              "semantic_ir_differs": 1
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 66,
+              "none": 1
+            },
+            "eligible_candidates": 0,
+            "supported_dirty_candidates": 1,
+            "candidate_fallbacks": 1,
+            "fallback_fraction_of_supported_candidates": 1.0,
+            "cache_writes": {
+              "carried": 66,
+              "written": 1
+            },
+            "fallback_fraction_of_all_cgus": 0.014925373134328358
+          }
+        }
+      ]
+    },
+    "sb-scene (scene source)": {
+      "timed_samples": 75,
+      "cells": [
+        {
+          "compiler": "official-1.100.0",
+          "case": "body",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 9.701374330998078,
+            "min": 8.634891439000057,
+            "max": 11.12671466500251
+          },
+          "peak_rss_kib": {
+            "median": 1369788,
+            "min": 1368384,
+            "max": 1374524
+          },
+          "artifact_bytes": {
+            "median": 1017575364,
+            "min": 1017574708,
+            "max": 1017575364
+          }
+        },
+        {
+          "compiler": "official-1.100.0",
+          "case": "noop",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 0.2380942550007603,
+            "min": 0.22919278900008067,
+            "max": 0.2467605999991065
+          },
+          "peak_rss_kib": {
+            "median": 107996,
+            "min": 107816,
+            "max": 108488
+          },
+          "artifact_bytes": {
+            "median": 1017575356,
+            "min": 1017575356,
+            "max": 1017575356
+          }
+        },
+        {
+          "compiler": "official-1.100.0",
+          "case": "top",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 18.463287203001528,
+            "min": 17.81508554800166,
+            "max": 19.54865418799818
+          },
+          "peak_rss_kib": {
+            "median": 1640736,
+            "min": 1634072,
+            "max": 1645580
+          },
+          "artifact_bytes": {
+            "median": 1017575356,
+            "min": 1017575356,
+            "max": 1017575356
+          }
+        },
+        {
+          "compiler": "official-1.100.0",
+          "case": "touch",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 7.584210011998948,
+            "min": 6.82729385499988,
+            "max": 7.736932995001553
+          },
+          "peak_rss_kib": {
+            "median": 1216816,
+            "min": 1215544,
+            "max": 1218532
+          },
+          "artifact_bytes": {
+            "median": 1017575356,
+            "min": 1017574700,
+            "max": 1017575356
+          }
+        },
+        {
+          "compiler": "official-1.100.0",
+          "case": "type",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 16.020996495000873,
+            "min": 15.39161766399775,
+            "max": 17.45670411899846
+          },
+          "peak_rss_kib": {
+            "median": 1595772,
+            "min": 1580540,
+            "max": 1599120
+          },
+          "artifact_bytes": {
+            "median": 1017575356,
+            "min": 1017575116,
+            "max": 1017575356
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "body",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 16.377960093999718,
+            "min": 15.457832896998298,
+            "max": 18.500961257999734
+          },
+          "peak_rss_kib": {
+            "median": 1297388,
+            "min": 1296508,
+            "max": 1315544
+          },
+          "artifact_bytes": {
+            "median": 901245560,
+            "min": 901245440,
+            "max": 901245560
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "noop",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 0.24394109200147795,
+            "min": 0.23520700999870314,
+            "max": 0.26489865199982887
+          },
+          "peak_rss_kib": {
+            "median": 108068,
+            "min": 108000,
+            "max": 108700
+          },
+          "artifact_bytes": {
+            "median": 901245440,
+            "min": 901245296,
+            "max": 901245560
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "top",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 22.389056905998586,
+            "min": 21.497012575000554,
+            "max": 23.74254342900167
+          },
+          "peak_rss_kib": {
+            "median": 1678232,
+            "min": 1660740,
+            "max": 1681652
+          },
+          "artifact_bytes": {
+            "median": 901245560,
+            "min": 901245560,
+            "max": 901245560
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "touch",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 13.430594736997591,
+            "min": 12.57029777400021,
+            "max": 16.721468542997172
+          },
+          "peak_rss_kib": {
+            "median": 1205876,
+            "min": 1192024,
+            "max": 1207400
+          },
+          "artifact_bytes": {
+            "median": 901245560,
+            "min": 901245440,
+            "max": 901245560
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "type",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 19.68427898400114,
+            "min": 18.52531502599959,
+            "max": 21.53905644200131
+          },
+          "peak_rss_kib": {
+            "median": 1555348,
+            "min": 1550544,
+            "max": 1573944
+          },
+          "artifact_bytes": {
+            "median": 901245560,
+            "min": 901245440,
+            "max": 901245560
+          }
+        },
+        {
+          "compiler": "unpatched-0fd799",
+          "case": "body",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 16.03483060600047,
+            "min": 14.952802834999602,
+            "max": 16.648008055999526
+          },
+          "peak_rss_kib": {
+            "median": 1287580,
+            "min": 1282356,
+            "max": 1302552
+          },
+          "artifact_bytes": {
+            "median": 901232314,
+            "min": 901232210,
+            "max": 901232314
+          }
+        },
+        {
+          "compiler": "unpatched-0fd799",
+          "case": "noop",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 0.2667384320011479,
+            "min": 0.2291527990018949,
+            "max": 0.6439852619987505
+          },
+          "peak_rss_kib": {
+            "median": 108392,
+            "min": 107844,
+            "max": 108680
+          },
+          "artifact_bytes": {
+            "median": 901232306,
+            "min": 901232202,
+            "max": 901232306
+          }
+        },
+        {
+          "compiler": "unpatched-0fd799",
+          "case": "top",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 23.059333911001886,
+            "min": 21.68407048500012,
+            "max": 24.7711862569995
+          },
+          "peak_rss_kib": {
+            "median": 1643688,
+            "min": 1634064,
+            "max": 1653724
+          },
+          "artifact_bytes": {
+            "median": 901232306,
+            "min": 901232306,
+            "max": 901232306
+          }
+        },
+        {
+          "compiler": "unpatched-0fd799",
+          "case": "touch",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 13.520515833999525,
+            "min": 12.140537412000413,
+            "max": 14.86568027300018
+          },
+          "peak_rss_kib": {
+            "median": 1190040,
+            "min": 1177864,
+            "max": 1196768
+          },
+          "artifact_bytes": {
+            "median": 901232306,
+            "min": 901232202,
+            "max": 901232306
+          }
+        },
+        {
+          "compiler": "unpatched-0fd799",
+          "case": "type",
+          "n": 5,
+          "failures": 0,
+          "wall_seconds": {
+            "median": 20.937861798000085,
+            "min": 17.42080694700053,
+            "max": 22.194239221000316
+          },
+          "peak_rss_kib": {
+            "median": 1515352,
+            "min": 1494408,
+            "max": 1525512
+          },
+          "artifact_bytes": {
+            "median": 901232202,
+            "min": 901232202,
+            "max": 901232306
+          }
+        }
+      ],
+      "superseded_diagnostics": {
+        "successful_samples": 4,
+        "failed_baseline_primes": 3,
+        "reason": "Disk exhaustion from temporary output retention; complete diagnostic campaign retried after cleanup."
+      },
+      "untimed_diagnostic_samples_per_case": 1,
+      "diagnostics": [
+        {
+          "compiler": "patched-b533f146",
+          "case": "touch",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 4,
+            "cargo_report_lines_ignored": 390,
+            "total_cgu_events": 195,
+            "outcomes": {
+              "ordinary_reuse": 195
+            },
+            "reasons": {
+              "green_post_lto": 195
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 195
+            },
+            "eligible_candidates": 0,
+            "supported_dirty_candidates": 0,
+            "candidate_fallbacks": 0,
+            "fallback_fraction_of_supported_candidates": null,
+            "cache_writes": {
+              "carried": 195
+            },
+            "fallback_fraction_of_all_cgus": 0.0
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "top",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 4,
+            "cargo_report_lines_ignored": 390,
+            "total_cgu_events": 195,
+            "outcomes": {
+              "ordinary_reuse": 179,
+              "accepted": 13,
+              "fallback": 3
+            },
+            "reasons": {
+              "green_post_lto": 179,
+              "validated_identical_ir": 13,
+              "semantic_ir_differs": 2,
+              "debug_rewrite_unsupported": 1
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 179,
+              "llvm_optimization": 13,
+              "none": 3
+            },
+            "eligible_candidates": 13,
+            "supported_dirty_candidates": 16,
+            "candidate_fallbacks": 3,
+            "fallback_fraction_of_supported_candidates": 0.1875,
+            "cache_writes": {
+              "carried": 179,
+              "written": 16
+            },
+            "fallback_fraction_of_all_cgus": 0.015384615384615385
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "compensated",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 4,
+            "cargo_report_lines_ignored": 390,
+            "total_cgu_events": 195,
+            "outcomes": {
+              "ordinary_reuse": 195
+            },
+            "reasons": {
+              "green_post_lto": 195
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 195
+            },
+            "eligible_candidates": 0,
+            "supported_dirty_candidates": 0,
+            "candidate_fallbacks": 0,
+            "fallback_fraction_of_supported_candidates": null,
+            "cache_writes": {
+              "carried": 195
+            },
+            "fallback_fraction_of_all_cgus": 0.0
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "body",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 4,
+            "cargo_report_lines_ignored": 390,
+            "total_cgu_events": 195,
+            "outcomes": {
+              "ordinary_reuse": 194,
+              "fallback": 1
+            },
+            "reasons": {
+              "green_post_lto": 194,
+              "semantic_ir_differs": 1
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 194,
+              "none": 1
+            },
+            "eligible_candidates": 0,
+            "supported_dirty_candidates": 1,
+            "candidate_fallbacks": 1,
+            "fallback_fraction_of_supported_candidates": 1.0,
+            "cache_writes": {
+              "carried": 194,
+              "written": 1
+            },
+            "fallback_fraction_of_all_cgus": 0.005128205128205128
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "type",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 4,
+            "cargo_report_lines_ignored": 390,
+            "total_cgu_events": 195,
+            "outcomes": {
+              "ordinary_reuse": 189,
+              "fallback": 3,
+              "accepted": 3
+            },
+            "reasons": {
+              "green_post_lto": 189,
+              "debug_rewrite_unsupported": 1,
+              "validated_identical_ir": 3,
+              "semantic_ir_differs": 2
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 189,
+              "none": 3,
+              "llvm_optimization": 3
+            },
+            "eligible_candidates": 3,
+            "supported_dirty_candidates": 6,
+            "candidate_fallbacks": 3,
+            "fallback_fraction_of_supported_candidates": 0.5,
+            "cache_writes": {
+              "carried": 189,
+              "written": 6
+            },
+            "fallback_fraction_of_all_cgus": 0.015384615384615385
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "noop",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "no_rustc_invocation",
+            "cargo_compilation_seen": false,
+            "captured_rustc_invocations": 0,
+            "cargo_report_lines_ignored": 390,
+            "total_cgu_events": 0,
+            "outcomes": {},
+            "reasons": {},
+            "skipped": {},
+            "eligible_candidates": null,
+            "supported_dirty_candidates": null,
+            "candidate_fallbacks": null,
+            "fallback_fraction_of_supported_candidates": null,
+            "cache_writes": {},
+            "fallback_fraction_of_all_cgus": null
+          }
+        },
+        {
+          "compiler": "patched-b533f146",
+          "case": "bottom",
+          "exit_code": 0,
+          "relocation": {
+            "report_status": "reported",
+            "cargo_compilation_seen": true,
+            "captured_rustc_invocations": 4,
+            "cargo_report_lines_ignored": 390,
+            "total_cgu_events": 195,
+            "outcomes": {
+              "ordinary_reuse": 195
+            },
+            "reasons": {
+              "green_post_lto": 195
+            },
+            "skipped": {
+              "mir_to_llvm_and_llvm_backend": 195
+            },
+            "eligible_candidates": 0,
+            "supported_dirty_candidates": 0,
+            "candidate_fallbacks": 0,
+            "fallback_fraction_of_supported_candidates": null,
+            "cache_writes": {
+              "carried": 195
+            },
+            "fallback_fraction_of_all_cgus": 0.0
+          }
+        }
+      ]
+    }
+  },
+  "cache_footprint": {
+    "measurement": "Untimed baseline rebuild after both timing campaigns, before diagnostic flags/wrapper.",
+    "allocation_note": "du counts allocated blocks with hard links deduplicated within each tree. Logical path sums can count hard-linked contents repeatedly and are not unique extra physical disk usage.",
+    "compilers": [
+      {
+        "compiler": "official-1.100.0",
+        "baseline_prime_succeeded": true,
+        "incremental_tree_allocated_bytes_du": 819372032,
+        "incremental_tree_logical_path_sum_bytes": 818278183,
+        "relocation_manifest_path_count": 0,
+        "relocation_manifest_logical_path_sum_bytes": 0
+      },
+      {
+        "compiler": "unpatched-0fd799",
+        "baseline_prime_succeeded": true,
+        "incremental_tree_allocated_bytes_du": 765755392,
+        "incremental_tree_logical_path_sum_bytes": 764664690,
+        "relocation_manifest_path_count": 0,
+        "relocation_manifest_logical_path_sum_bytes": 0
+      },
+      {
+        "compiler": "patched-b533f146",
+        "baseline_prime_succeeded": true,
+        "incremental_tree_allocated_bytes_du": 1161879552,
+        "incremental_tree_logical_path_sum_bytes": 1159859830,
+        "relocation_manifest_path_count": 441,
+        "relocation_manifest_logical_path_sum_bytes": 397657709
+      }
+    ]
+  },
+  "temporary_output_retention_failure": {
+    "phase": "After all150primary samples, during untimed diagnostics disk-exhaustion investigation",
+    "full_target_allocated_bytes_du": 36543651840,
+    "temporary_relocation_path_count": 15317,
+    "temporary_relocation_logical_path_sum_bytes": 34253378201,
+    "temporary_relocation_allocated_path_sum_bytes": 34287226880,
+    "cleanup_bug": "Per-invocation randomized temporary .relocation sidecars survive link cleanup; not the incremental cache manifests."
+  }
+}
