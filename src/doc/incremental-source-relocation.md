@@ -382,3 +382,24 @@ second runtime-`line!` build. That miss did not reproduce in the subsequent fres
 runs or the bootstrap run. Its cause remains unexplained; the observed fallback
 did not reuse a stale object. The checks above establish the exercised cases,
 not complete cache lifecycle coverage.
+
+A later repeated-build validation exposed a temporary-manifest leak in `b533f146`:
+per-invocation output sidecars survived after their incremental-cache copies were
+saved, including ordinary green carries. Repeated builds accumulated these files
+until the filesystem ran out of space. Production repair
+`6dd88db2949b3173124de6f722f362678388e0d8` unlinks temporary output sidecars in
+`produce_final_output_artifacts`, after work-product persistence and before
+linking. This covers object-only and linked outputs, ordinary green reuse,
+accepted relocation, and fallback. Incremental-cache manifests remain available;
+cleanup only unlinks the temporary path and respects `-Csave-temps`.
+
+The repaired compiler and standard library built successfully with LLVM 23.1.5.
+The extended run-make test failed on `b533f146` because a temporary sidecar
+remained, then passed on `6dd88db2949b3173124de6f722f362678388e0d8`. It checks
+output-sidecar absence after object and executable builds, retained cache
+manifests, and linked rlib initial/green/accepted/fallback builds. The three
+existing span tests named above passed again with default options and in a
+forced rerun with relocation and incremental hash verification enabled, LTO off,
+and embedded bitcode disabled. Existing benchmark timings remain attributed to
+`b533f146`; this repair has no performance claim. The separate benchmark report
+will distinguish the two compiler identities.
