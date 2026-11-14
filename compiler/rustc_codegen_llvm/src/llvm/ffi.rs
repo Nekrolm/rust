@@ -2615,6 +2615,15 @@ unsafe extern "C" {
     pub(crate) fn LLVMRustModuleCost<'ll>(M: Module<'ll>) -> u64;
     pub(crate) fn LLVMRustModuleInstructionStats<'ll>(M: Module<'ll>) -> u64;
 
+    pub(crate) fn LLVMRustRelocationRefreshDebugInfo<'ll>(
+        Current: Module<'ll>,
+        OldData: *const u8,
+        OldLen: size_t,
+        OptimizedData: *const u8,
+        OptimizedLen: size_t,
+        Status: *mut u32,
+    ) -> Option<Module<'ll>>;
+
     pub(crate) fn LLVMRustModuleSerialize<'ll>(
         M: Module<'ll>,
         is_thin: bool,
