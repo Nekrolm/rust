@@ -2,7 +2,7 @@
 //@ ignore-cross-compile
 //@ ignore-backends: gcc
 
-use run_make_support::{llvm_dwarfdump, rfs, run, rustc};
+use run_make_support::{cmd, rfs, run, rustc};
 
 const SOURCE: &str = "#![no_std]\n#[unsafe(no_mangle)]\n#[inline(never)]\npub extern \"C\" fn answer(x: u64) -> u64 { x.wrapping_mul(3) }\n";
 
@@ -26,7 +26,7 @@ fn build(incremental: &str, extra: &[&str]) -> String {
 }
 
 fn debug_info() -> String {
-    llvm_dwarfdump().arg("--debug-info").arg("--debug-line").arg("sample.o").run().stdout_utf8()
+    cmd("readelf").arg("--debug-dump=info,rawline").arg("sample.o").run().stdout_utf8()
 }
 
 fn assert_reason(report: &str, reason: &str) {
