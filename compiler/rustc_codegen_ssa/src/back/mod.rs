@@ -11,6 +11,7 @@ pub mod lto;
 pub mod metadata;
 pub mod rmeta_link;
 pub(crate) mod rpath;
+pub mod source_relocation;
 mod symbol_edit;
 pub mod symbol_export;
 pub mod write;
