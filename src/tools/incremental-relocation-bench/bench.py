@@ -53,6 +53,20 @@ def compiler_identity(cfg, compiler):
     return capture([compiler["rustc"], "-Vv"], env=env)
 
 
+def validate_controls(cfg, diagnostics_run=False):
+    names = [compiler["name"] for compiler in cfg["compilers"]]
+    assert len(names) == len(set(names)), "compiler names must select distinct target directories"
+    controls = [compiler for compiler in cfg["compilers"] if "controlled_experiment" in compiler]
+    for compiler in controls:
+        assert compiler["controlled_experiment"] in ("off", "on")
+        visible_flags = compiler.get("flags", []) + compiler.get("diagnostic_flags", [])
+        assert not any("incremental-source-relocation" in flag for flag in visible_flags)
+    if controls and not diagnostics_run:
+        assert sorted(compiler["controlled_experiment"] for compiler in controls) == ["off", "on"]
+        for field in ("rustc", "flags", "environment"):
+            assert controls[0].get(field) == controls[1].get(field), f"controlled pair must share {field}"
+
+
 def summarize(records):
     groups = collections.defaultdict(list)
     for row in records:
@@ -120,6 +134,7 @@ def main():
     parser.add_argument("--diagnostics", action="store_true")
     args = parser.parse_args()
     cfg = json.loads(args.config.read_text())
+    validate_controls(cfg, args.diagnostics)
     out = Path(cfg["output"]).resolve()
     out.mkdir(parents=True, exist_ok=True)
     record_path = out / ("diagnostics.jsonl" if args.diagnostics else "raw.jsonl")
@@ -132,6 +147,8 @@ def main():
     source = original.decode()
     records = []
     metadata = {"config": cfg, "seed": cfg.get("seed", 1729),
+                "harness_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                "capture_wrapper_sha256": hashlib.sha256(Path(__file__).with_name("capture-rustc.py").read_bytes()).hexdigest(),
                 "source_sha256": hashlib.sha256(original).hexdigest(),
                 "cargo_version": capture([cfg["cargo"], "-V"]),
                 "repository_commit": capture(["git", "-C", cfg.get("repository", cfg.get("bevy")), "rev-parse", "HEAD"]),
@@ -153,6 +170,10 @@ def main():
                         "CARGO_PROFILE_DEV_DEBUG": str(debug), "CARGO_PROFILE_DEV_OPT_LEVEL": str(opt),
                         "CARGO_PROFILE_DEV_CODEGEN_UNITS": str(cfg.get("codegen_units", 16)),
                         "CARGO_ENCODED_RUSTFLAGS": "\x1f".join(compiler.get("flags", []))})
+            controlled_mode = compiler.get("controlled_experiment")
+            wrapped = args.diagnostics or compiler.get("capture_invocations", False) or controlled_mode is not None
+            for variable in ("RELOCATION_EXPERIMENT_MODE", "RELOCATION_INJECT_REPORT", "RELOCATION_TIME_PASSES_CRATES"):
+                env.pop(variable, None)
             if args.diagnostics:
                 env.update(compiler.get("diagnostic_env", {}))
                 diagnostic_flags = list(compiler.get("diagnostic_flags", []))
@@ -161,14 +182,17 @@ def main():
                     diagnostic_flags.remove("-Zincremental-relocation-report")
                 if diagnostic_flags:
                     env["CARGO_ENCODED_RUSTFLAGS"] += "\x1f" + "\x1f".join(diagnostic_flags)
+            if controlled_mode is not None:
+                env["RELOCATION_EXPERIMENT_MODE"] = controlled_mode
+            if wrapped:
                 if env.get("RUSTC_WRAPPER") or env.get("RUSTC_WORKSPACE_WRAPPER"):
-                    raise RuntimeError("diagnostic capture requires rustc without another compiler wrapper")
+                    raise RuntimeError("compiler capture requires rustc without another compiler wrapper")
                 env["RUSTC_WRAPPER"] = str(Path(__file__).with_name("capture-rustc.py").resolve())
             command = [cfg["cargo"], "build", "--locked", "--offline", "--manifest-path", cfg["manifest"], *cfg.get("cargo_args", [])]
             cwd = cfg.get("cwd", str(Path(cfg["manifest"]).parent))
             stem = f'{number:05d}-{key}-{case}-r{repeat}'
             source_path.write_bytes(original)
-            if args.diagnostics:
+            if wrapped:
                 env["RELOCATION_RUSTC_CAPTURE_DIR"] = str(out / (stem + "-prime-rustc"))
             with (out / (stem + "-prime.log")).open("w") as log:
                 prime = subprocess.run(command, env=env, cwd=cwd, stdout=log, stderr=subprocess.STDOUT)
@@ -187,7 +211,7 @@ def main():
             elif case != "noop":
                 source_path.write_text(edit(source, case, cfg))
             invocation_directory = out / (stem + "-rustc")
-            if args.diagnostics:
+            if wrapped:
                 env["RELOCATION_RUSTC_CAPTURE_DIR"] = str(invocation_directory)
             with (out / (stem + ".log")).open("w") as log:
                 start = time.perf_counter()

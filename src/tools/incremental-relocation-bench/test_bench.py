@@ -1,11 +1,48 @@
 import json
+import os
+import select
+import subprocess
+import sys
 import unittest
 from pathlib import Path
 import tempfile
-from bench import CASES, diagnostics, edit, summarize
+from bench import CASES, diagnostics, edit, summarize, validate_controls
 
 
 class HarnessTests(unittest.TestCase):
+    def test_capture_wrapper_streams_before_compiler_exit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            env = os.environ.copy()
+            for variable in ("RELOCATION_EXPERIMENT_MODE", "RELOCATION_INJECT_REPORT", "RELOCATION_TIME_PASSES_CRATES"):
+                env.pop(variable, None)
+            env["RELOCATION_RUSTC_CAPTURE_DIR"] = directory
+            child = "import sys; sys.stderr.write('early\\n'); sys.stderr.flush(); sys.stdin.read(1); sys.stderr.write('late\\n')"
+            process = subprocess.Popen([sys.executable, str(Path(__file__).with_name("capture-rustc.py")),
+                                        sys.executable, "-c", child], env=env,
+                                       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            try:
+                ready, _, _ = select.select([process.stderr], [], [], 5)
+                self.assertTrue(ready, "compiler stderr was buffered until exit")
+                self.assertEqual(process.stderr.readline(), b"early\n")
+                process.stdin.write(b"x")
+                process.stdin.flush()
+                stdout, stderr = process.communicate(timeout=5)
+                self.assertEqual((process.returncode, stdout, stderr), (0, b"", b"late\n"))
+                capture, = Path(directory).glob("*.stderr")
+                self.assertEqual(capture.read_bytes(), b"early\nlate\n")
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.communicate(timeout=5)
+
+    def test_controlled_modes_require_same_inputs_and_separate_targets(self):
+        off = {"name": "off", "rustc": "/compiler", "flags": [], "controlled_experiment": "off"}
+        on = {**off, "name": "on", "controlled_experiment": "on"}
+        validate_controls({"compilers": [off, on]})
+        for changed in ({"name": "off"}, {"rustc": "/other"}, {"flags": ["-Zincremental-source-relocation"]}):
+            with self.assertRaises(AssertionError):
+                validate_controls({"compilers": [off, {**on, **changed}]})
+
     def test_physical_edits(self):
         source = "struct State;\n\nfn generic<T>() { work(); }\n\nfn end() {}\n"
         cfg = {"generic_marker": "fn generic", "type_marker": "struct State",

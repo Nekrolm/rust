@@ -69,13 +69,25 @@ its per-invocation stderr files. Cargo's combined output remains available as a
 log, but its report lines are ignored. Each capture also records the actual
 command and exit status. No actual invocation is reported separately from a
 compiler invocation with missing reports; neither is evidence of zero fallback.
-The wrapper and report flag are absent from primary timings. The wrapper injects
+The main unwrapped timings exclude both wrapper and report flag. The wrapper injects
 the known untracked `-Zincremental-relocation-report` flag from `diagnostic_flags`
 without changing Cargo's rustflags or artifact namespace. Other diagnostic flags
 remain Cargo-visible and can require a dependency prime. Actual captured commands
 record the injected flag explicitly.
 Diagnostic capture requires other compiler wrappers to be unset, since a cache
 wrapper could itself replay stderr without executing rustc.
+
+For a supplemental same-binary control, set `controlled_experiment` to `"off"`
+and `"on"` on two entries with identical rustc paths, Cargo-visible flags and
+environments, and distinct names. Both use the same capture wrapper; it injects
+the tracked experiment flag only in on mode. Their target/incremental directories
+must remain separate. This deliberately keeps Cargo's crate metadata and CGU
+partitioning inputs constant while isolating the two incremental caches. Captures
+record the mode and actual command so matching metadata can be verified. Set
+`capture_invocations: true` on additional comparison entries to include the same
+wrapper overhead. Such controlled timings include wrapper startup/capture cost
+symmetrically and must be distinguished from ordinary unwrapped measurements.
+`example-controlled-config.json` shows this pair for the two supplemental profiles.
 
 For an untimed profiling subset, set `RELOCATION_TIME_PASSES_CRATES` in
 `diagnostic_env` to comma-separated Rust crate names. The wrapper adds
