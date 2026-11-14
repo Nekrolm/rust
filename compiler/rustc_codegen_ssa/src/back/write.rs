@@ -941,12 +941,23 @@ fn execute_copy_from_cache_work_item(
     if cgcx.source_relocation {
         let relocation_output = relocation_manifest_path(&cgcx.output_filenames, &module.name);
         let _ = fs::remove_file(&relocation_output);
-        if let Some(saved_file) = module.source.saved_files.get("relocation")
-            && let Some(parent) = relocation_output.parent()
-            && let Ok(temporary) = tempfile::NamedTempFile::new_in(parent)
-            && fs::copy(old_incr_comp_session_dir.join(saved_file), temporary.path()).is_ok()
-        {
-            let _ = temporary.persist(relocation_output);
+        if let Some(saved_file) = module.source.saved_files.get("relocation") {
+            let copied = relocation_output.parent().is_some_and(|parent| {
+                tempfile::NamedTempFile::new_in(parent)
+                    .and_then(|temporary| {
+                        fs::copy(old_incr_comp_session_dir.join(saved_file), temporary.path())?;
+                        temporary
+                            .persist(&relocation_output)
+                            .map(|_| ())
+                            .map_err(|error| error.error)
+                    })
+                    .is_ok()
+            });
+            report_relocation_cache(
+                cgcx.relocation_report,
+                &module.name,
+                if copied { "carried" } else { "manifest_io_failure" },
+            );
         }
     }
 

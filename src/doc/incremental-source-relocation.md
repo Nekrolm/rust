@@ -334,7 +334,7 @@ Fallback reasons include `disabled`, `unsupported_lto`, `unsupported_split_debug
 `malformed_manifest`, `manifest_oversize`, `manifest_io_failure`, `manifest_binding_mismatch`, `semantic_ir_differs`,
 `source_mapping_unsupported`, `debug_rewrite_unsupported`, and `malformed_bitcode`.
 Acceptance uses `validated_debug_refresh` and `skipped=llvm_optimization`.
-Separate `cache_write` events report `written`, `manifest_oversize`, or
+Separate `cache_write` events report `written`, `carried`, `manifest_oversize`, or
 `manifest_io_failure`; exclude those lifecycle events from CGU denominators.
 Reporting is opt-in and contains no source text, paths, or per-item identifiers.
 
