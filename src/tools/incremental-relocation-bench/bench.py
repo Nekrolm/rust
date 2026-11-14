@@ -64,12 +64,14 @@ def summarize(records):
              "sufficient_repeated_samples": len(v) >= 5} for k, v in sorted(groups.items(), key=lambda item: tuple(map(str, item[0])))]
 
 
-def diagnostics(log):
+def diagnostics(log, invocation_directory=None):
     events = []
     writes = collections.Counter()
     text = log.read_text()
     cargo_compilation_seen = bool(re.search(r"^\s*Compiling ", text, re.MULTILINE))
-    for line in text.splitlines():
+    invocation_logs = sorted(invocation_directory.glob("*.stderr")) if invocation_directory else None
+    report_text = "\n".join(path.read_text() for path in invocation_logs) if invocation_logs is not None else text
+    for line in report_text.splitlines():
         if line.startswith("rustc-relocation: "):
             event = json.loads(line.removeprefix("rustc-relocation: "))
             assert event["schema"] == 1
@@ -97,8 +99,10 @@ def diagnostics(log):
         candidates += event["count"] if event.get("candidate") else 0
         if event.get("candidate") and event["outcome"] == "fallback":
             candidate_fallbacks += event["count"]
-    return {"report_status": "reported" if count else "missing" if cargo_compilation_seen else "no_cargo_compilation_seen",
+    return {"report_status": "reported" if count else "no_rustc_invocation" if invocation_logs == [] else "missing" if cargo_compilation_seen else "no_cargo_compilation_seen",
             "cargo_compilation_seen": cargo_compilation_seen,
+            "captured_rustc_invocations": len(invocation_logs) if invocation_logs is not None else None,
+            "cargo_report_lines_ignored": text.count("rustc-relocation: ") if invocation_logs is not None else 0,
             "total_cgu_events": count, "outcomes": dict(outcomes), "reasons": dict(reasons),
             "skipped": dict(skipped), "eligible_candidates": eligible if eligibility_known and count else None,
             "supported_dirty_candidates": candidates if candidates_known and count else None,
@@ -152,10 +156,15 @@ def main():
             if args.diagnostics:
                 env.update(compiler.get("diagnostic_env", {}))
                 env["CARGO_ENCODED_RUSTFLAGS"] += "\x1f" + "\x1f".join(compiler.get("diagnostic_flags", []))
+                if env.get("RUSTC_WRAPPER"):
+                    env["RELOCATION_CHAINED_RUSTC_WRAPPER"] = env["RUSTC_WRAPPER"]
+                env["RUSTC_WRAPPER"] = str(Path(__file__).with_name("capture-rustc.py").resolve())
             command = [cfg["cargo"], "build", "--locked", "--offline", "--manifest-path", cfg["manifest"], *cfg.get("cargo_args", [])]
             cwd = cfg.get("cwd", str(Path(cfg["manifest"]).parent))
             stem = f'{number:05d}-{key}-{case}-r{repeat}'
             source_path.write_bytes(original)
+            if args.diagnostics:
+                env["RELOCATION_RUSTC_CAPTURE_DIR"] = str(out / (stem + "-prime-rustc"))
             with (out / (stem + "-prime.log")).open("w") as log:
                 prime = subprocess.run(command, env=env, cwd=cwd, stdout=log, stderr=subprocess.STDOUT)
             if prime.returncode:
@@ -172,6 +181,9 @@ def main():
                 os.utime(source_path, None)
             elif case != "noop":
                 source_path.write_text(edit(source, case, cfg))
+            invocation_directory = out / (stem + "-rustc")
+            if args.diagnostics:
+                env["RELOCATION_RUSTC_CAPTURE_DIR"] = str(invocation_directory)
             with (out / (stem + ".log")).open("w") as log:
                 start = time.perf_counter()
                 build = subprocess.Popen(command, env=env, cwd=cwd, stdout=log, stderr=subprocess.STDOUT)
@@ -185,7 +197,7 @@ def main():
                    "artifact_bytes": sum(p.stat().st_size for p in (target / "debug").rglob("*.rlib"))}
             records.append(row)
             if args.diagnostics:
-                row["relocation"] = diagnostics(out / (stem + ".log"))
+                row["relocation"] = diagnostics(out / (stem + ".log"), invocation_directory)
             with record_path.open("a") as file:
                 file.write(json.dumps(row) + "\n")
             print(json.dumps(row), flush=True)
