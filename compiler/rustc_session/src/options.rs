@@ -2622,6 +2622,10 @@ options! {
     incremental_info: bool = (false, parse_bool, [UNTRACKED],
         "print high-level information about incremental reuse (or the lack thereof) \
         (default: no)"),
+    incremental_relocation_report: bool = (false, parse_bool, [UNTRACKED],
+        "print experimental source relocation JSON events to stderr (default: no)"),
+    incremental_source_relocation: bool = (false, parse_bool, [TRACKED],
+        "enable the fork-only experimental backend source relocation cache (default: no)"),
     incremental_verify_ich: bool = (false, parse_bool, [UNTRACKED],
         "verify extended properties for incr. comp. (default: no):
         - hashes of green query instances

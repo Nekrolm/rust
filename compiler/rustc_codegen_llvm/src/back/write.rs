@@ -859,9 +859,14 @@ pub(crate) fn optimize(
     cgcx: &CodegenContext,
     prof: &SelfProfilerRef,
     shared_emitter: &SharedEmitter,
-    module: &ModuleCodegen<ModuleLlvm>,
+    module: &mut ModuleCodegen<ModuleLlvm>,
     config: &ModuleConfig,
 ) {
+    let relocation = super::source_relocation::prepare(cgcx, module, config);
+    if relocation.reused() {
+        relocation.save(cgcx, module);
+        return;
+    }
     // Pass `module_refs` to an inner function to avoid having to indent the whole thing.
     //
     // It feels a bit odd to be passing both `module` and `module_refs` here, but it's
@@ -869,6 +874,7 @@ pub(crate) fn optimize(
     module.module_llvm.with_module_refs(|module_refs| {
         optimize_inner(cgcx, prof, shared_emitter, module, module_refs, config);
     });
+    relocation.save(cgcx, module);
 }
 
 fn optimize_inner<'ll>(

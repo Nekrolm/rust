@@ -267,3 +267,55 @@ Completion means actual compiler execution demonstrates reuse with correct updat
 locations and a balanced benchmark report includes regressions and unsupported
 cases. If build infrastructure blocks that evidence, label the affected PRs and
 report as unvalidated rather than claiming completion or a speedup.
+
+## Backend prototype in the fork
+
+The opt-in switch is `-Zincremental-source-relocation`. This first backend path
+retains all existing dependency tracking and regenerates the complete unoptimized
+LLVM module for a dirty CGU. It stores that module and its optimized bitcode in a
+versioned, checksummed manifest. The LLVM helper compares canonical modules after
+removing only debug information, validates its supported debug mapping, and
+refreshes a temporary optimized module. Success skips LLVM optimization; MIR to
+LLVM lowering, object emission, and linking still run. There is no object-section
+patching and no speedup claim before a built compiler executes the tests.
+
+The initial configuration requires `-Clto=off -Cembed-bitcode=no`, ordinary object
+or linked output, and no split debug information, save-temps, profiling, coverage,
+sanitizers, extra passes, plugins, autodiff, or offload. The helper further rejects
+unsupported debug graphs and mappings. In particular, this is a narrow uniform
+movement experiment, not an implementation of the full per-entity map above.
+Requested debug outputs and runtime location constants remain inputs; rejected
+cases take the normal backend path.
+
+Manifests bind compiler/cache version, target, tracked session options, and CGU
+identity. They contain exact pre-optimization and optimized bitcode plus a stable
+128-bit checksum for accidental corruption detection. They are trusted compiler
+cache data, not an authenticated interchange format. The 256 MiB manifest limit
+is an explicit miss. Cache writes install fresh temporary files; ordinary green
+reuse carries the manifest into the next session. Repeated movements compare
+against the latest unoptimized module and refreshed optimized module.
+
+For applicability measurements, `-Zincremental-relocation-report` prints JSON
+lines prefixed `rustc-relocation: `. This untracked switch does not change the
+session configuration hash. Schema 1 `cgu` events include a hashed CGU scope,
+compiler hash, mode, candidate/eligible booleans, outcome, stable reason, and
+skipped stage. A candidate is a dirty CGU in a supported configuration; eligibility
+is established only on acceptance. Ordinary green reuse has a separate outcome.
+Non-LLVM backends report `unsupported_backend` for dirty CGUs in the shared
+scheduler. Alternative backends with independent schedulers may emit no events.
+
+Fallback reasons include `disabled`, `unsupported_lto`, `unsupported_split_debug`,
+`unsupported_output`, `unsupported_instrumentation`, `no_prior_manifest`,
+`malformed_manifest`, `manifest_binding_mismatch`, `semantic_ir_differs`,
+`source_mapping_unsupported`, `debug_rewrite_unsupported`, and `malformed_bitcode`.
+Acceptance uses `validated_debug_refresh` and `skipped=llvm_optimization`.
+Separate `cache_write` events report `written`, `manifest_oversize`, or
+`manifest_io_failure`; exclude those lifecycle events from CGU denominators.
+Reporting is opt-in and contains no source text, paths, or per-item identifiers.
+
+The run-make regression test exercises actual accepted reuse, positive and
+negative repeated shifts, clean-object and decoded-DWARF comparisons, semantic
+edits, runtime `line!` constants, unsupported output fallback, and executed
+`line!`, `column!`, `file!`, track-caller and panic locations. These test cases are
+implementation work awaiting execution with the patched compiler; their presence
+alone is not correctness evidence.

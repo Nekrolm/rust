@@ -1,3 +1,4 @@
+use std::hash::Hasher;
 use std::marker::PhantomData;
 use std::num::NonZero;
 use std::panic::AssertUnwindSafe;
@@ -9,12 +10,14 @@ use std::{assert_matches, fs, io, str, thread};
 use rustc_abi::Size;
 use rustc_data_structures::jobserver::{self, Acquired};
 use rustc_data_structures::profiling::{SelfProfilerRef, VerboseTimingGuard};
+use rustc_data_structures::stable_hash::StableHasher;
 use rustc_errors::emitter::Emitter;
 use rustc_errors::{
     Diag, DiagCtxt, DiagCtxtHandle, DiagInner, FatalError, FatalErrorMarker, Level,
     catch_fatal_errors,
 };
 use rustc_fs_util::link_or_copy;
+use rustc_hashes::Hash128;
 use rustc_incremental::{
     copy_cgu_workproduct_to_incr_comp_cache_dir, in_incr_comp_dir_sess, in_old_incr_comp_dir_sess,
 };
@@ -349,6 +352,12 @@ pub struct CodegenContext {
     ///
     /// Depends on [`WriteBackendMethods::supports_parallel()`] and `--jobs-backend`.
     pub parallel: Option<NonZero<usize>>,
+    pub source_relocation: bool,
+    pub relocation_report: bool,
+    pub relocation_old_directory: Option<PathBuf>,
+    pub relocation_compiler: Vec<u8>,
+    pub relocation_target: Vec<u8>,
+    pub relocation_options: Vec<u8>,
 }
 
 fn generate_thin_lto_work<B: WriteBackendMethods>(
@@ -484,6 +493,13 @@ fn copy_all_cgu_workproducts_to_incr_comp_cache_dir(
         }
         if let Some(path) = &module.bytecode {
             files.push((OutputType::Bitcode.extension(), path.as_path()));
+        }
+        let relocation_path = module.object.as_ref().map(|path| path.with_extension("relocation"));
+        if sess.opts.unstable_opts.incremental_source_relocation
+            && let Some(path) = &relocation_path
+            && path.is_file()
+        {
+            files.push(("relocation", path.as_path()));
         }
         let (id, product) = copy_cgu_workproduct_to_incr_comp_cache_dir(
             sess,
@@ -922,6 +938,18 @@ fn execute_copy_from_cache_work_item(
         }
     };
 
+    if cgcx.source_relocation {
+        let relocation_output = relocation_manifest_path(&cgcx.output_filenames, &module.name);
+        let _ = fs::remove_file(&relocation_output);
+        if let Some(saved_file) = module.source.saved_files.get("relocation")
+            && let Some(parent) = relocation_output.parent()
+            && let Ok(temporary) = tempfile::NamedTempFile::new_in(parent)
+            && fs::copy(old_incr_comp_session_dir.join(saved_file), temporary.path()).is_ok()
+        {
+            let _ = temporary.persist(relocation_output);
+        }
+    }
+
     let module_config = &cgcx.module_config;
     let should_emit_obj = module_config.emit_obj != EmitObj::None;
     let assembly = load_from_incr_cache(module_config.emit_asm, OutputType::Assembly);
@@ -1280,6 +1308,33 @@ fn start_executing_work<B: WriteBackendMethods>(
         split_debuginfo: tcx.sess.split_debuginfo(),
         split_dwarf_kind: tcx.sess.opts.unstable_opts.split_dwarf_kind,
         parallel,
+        source_relocation: sess.opts.unstable_opts.incremental_source_relocation
+            && sess.opts.incremental.is_some()
+            && !sess.opts.unstable_opts.disable_incr_comp_backend_caching,
+        relocation_report: sess.opts.unstable_opts.incremental_relocation_report,
+        relocation_old_directory: tcx
+            .incr_comp_session
+            .and_then(|session| session.borrow().old_session_directory.clone()),
+        relocation_compiler: if sess.opts.unstable_opts.incremental_source_relocation {
+            format!(
+                "relocation-v1:{}:{}",
+                sess.cfg_version,
+                option_env!("CFG_VER_HASH").unwrap_or("unknown")
+            )
+            .into_bytes()
+        } else {
+            Vec::new()
+        },
+        relocation_target: if sess.opts.unstable_opts.incremental_source_relocation {
+            format!("{:?}", sess.target).into_bytes()
+        } else {
+            Vec::new()
+        },
+        relocation_options: if sess.opts.unstable_opts.incremental_source_relocation {
+            sess.opts.dep_tracking_hash(false).as_u64().to_le_bytes().to_vec()
+        } else {
+            Vec::new()
+        },
         pointer_size: tcx.data_layout.pointer_size(),
     };
 
@@ -2306,4 +2361,56 @@ fn msvc_imps_needed(tcx: TyCtxt<'_>) -> bool {
     // emit the `__imp_` symbols. Instead we make them unnecessary by disallowing
     // dynamic linking when linker plugin LTO is enabled.
     !tcx.sess.opts.cg.linker_plugin_lto.enabled()
+}
+
+pub fn relocation_manifest_path(outputs: &OutputFilenames, name: &str) -> PathBuf {
+    outputs.temp_path_for_cgu(OutputType::Object, name).with_extension("relocation")
+}
+
+pub fn report_source_relocation(
+    enabled: bool,
+    cgu: &str,
+    outcome: &str,
+    reason: &str,
+    skipped: &str,
+) {
+    if enabled {
+        eprintln!(
+            "rustc-relocation: {}",
+            serde_json::json!({
+                "schema": 1,
+                "event": "cgu",
+                "cgu": relocation_scope(cgu),
+                "compiler": option_env!("CFG_VER_HASH").unwrap_or("unknown"),
+                "mode": "optimized_bitcode_v1",
+                "count": 1,
+                "candidate": outcome != "ordinary_reuse" && reason != "disabled"
+                    && !reason.starts_with("unsupported_"),
+                "eligible": outcome == "accepted",
+                "outcome": outcome,
+                "reason": reason,
+                "skipped": skipped,
+            })
+        );
+    }
+}
+
+fn relocation_scope(cgu: &str) -> String {
+    let mut hasher = StableHasher::new();
+    hasher.write(cgu.as_bytes());
+    format!("{:032x}", hasher.finish::<Hash128>())
+}
+
+pub fn report_relocation_cache(enabled: bool, cgu: &str, reason: &str) {
+    if enabled {
+        eprintln!(
+            "rustc-relocation: {}",
+            serde_json::json!({
+                "schema": 1,
+                "event": "cache_write",
+                "cgu": relocation_scope(cgu),
+                "reason": reason,
+            })
+        );
+    }
 }

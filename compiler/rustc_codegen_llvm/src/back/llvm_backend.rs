@@ -57,6 +57,10 @@ impl Drop for TimeTraceProfiler {
 impl ExtraBackendMethods for LlvmCodegenBackend {
     type Module = ModuleLlvm;
 
+    fn supports_source_relocation(&self) -> bool {
+        true
+    }
+
     fn codegen_allocator<'tcx>(
         &self,
         tcx: TyCtxt<'tcx>,
@@ -556,6 +560,27 @@ impl ModuleLlvm {
                 thin_lto_buffer: OnceCell::new(),
             }
         }
+    }
+
+    pub(crate) fn try_relocate(&mut self, previous: &[u8], optimized: &[u8]) -> Result<(), u32> {
+        let result = self.with_module_refs(|refs| {
+            let mut status = 4;
+            let module = unsafe {
+                llvm::LLVMRustRelocationRefreshDebugInfo(
+                    refs.llmod,
+                    previous.as_ptr(),
+                    previous.len(),
+                    optimized.as_ptr(),
+                    optimized.len(),
+                    &mut status,
+                )
+            };
+            module.map(|module| module.llmod_raw()).ok_or(status)
+        });
+        let replacement = result?;
+        // Both modules belong to this context; no borrowed LLVM references escape.
+        self.llmod_raw = replacement;
+        Ok(())
     }
 
     /// Passes a [`ModuleRefs`] struct to a callback function, giving it scoped
