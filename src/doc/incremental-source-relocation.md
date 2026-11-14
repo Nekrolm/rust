@@ -190,6 +190,29 @@ well as on relocation; repeated moves must not accumulate an incorrect delta.
 Do not use `-Zincremental-ignore-spans` as the proposed solution. It is at most a
 diagnostic comparison, with explicit labeling and no correctness claim.
 
+## Observability
+
+Reserve an opt-in machine-readable reporting option alongside the experiment.
+The report must measure how frequently real code reaches the optimization and why
+it falls back, including when the optimization saves little time. Reporting must
+not change eligibility or reuse decisions; keep it disabled in primary timing runs.
+
+Use a versioned schema with crate/CGU scope and stable reason codes. Count ordinary
+green reuse separately from relocation attempts. Record candidate/attempt counts,
+accepted relocations, backend cache hits, normal recompiles, and rejected attempts
+by reason: unsupported configuration or format, missing artifact/manifest, changed
+semantic input, nonuniform or ambiguous source mapping, changed entity content,
+invalid manifest/artifact binding, unsupported debug metadata, rewrite failure,
+and output validation failure. Distinguish the stages actually skipped. Each
+attempt has exactly one terminal outcome so rates have an unambiguous denominator.
+
+Include compiler identity and relevant mode settings. Avoid recording source text;
+aggregate counts are sufficient by default. The harness should collect reports
+from all compiler invocations using separate files or a concurrency-safe stream,
+then publish success/fallback rates and reason counts in untimed diagnostic runs.
+Missing reports, disabled instrumentation, and zero candidates are distinct from a
+measured zero fallback rate. Verify report accounting with deterministic tests.
+
 ## Test and measurement plan
 
 Before changing reuse behavior, run existing incremental span tests and capture a
