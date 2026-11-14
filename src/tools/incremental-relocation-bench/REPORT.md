@@ -84,9 +84,16 @@ against the pinned source. Exact commands:
 
 ```
 python3 -m unittest discover -s src/tools/incremental-relocation-bench -p test_bench.py -v
-python3 bench.py /workspace/work/validation-records/official-debug0-config.json --repeats 5
-python3 correctness.py --rustc /workspace/work/toolchains/1.100.0/bin/rustc --output /workspace/work/validation-records/correctness-1.100.0
+python3 src/tools/incremental-relocation-bench/bench.py /workspace/work/validation-records/official-debug0-config.json --repeats 5
+python3 src/tools/incremental-relocation-bench/correctness.py --rustc /workspace/work/toolchains/1.100.0/bin/rustc --output /workspace/work/validation-records/correctness-1.100.0
 ```
+
+Independent execution also passed the standalone LLVM helper binary
+`/workspace/work/llvm-relocation-test` and all eight primitive tests from
+`/workspace/work/source-relocation-tests --test-threads=1`. `readelf -Ws` confirms
+the helper binary retains `__assert_fail` references, addressing the risk that
+release-mode `NDEBUG` could erase its assertion-based checks. These component
+checks do not exercise the complete patched compiler or its cache lifecycle.
 
 ## Still unvalidated
 
