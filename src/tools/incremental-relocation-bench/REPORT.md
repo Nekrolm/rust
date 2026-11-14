@@ -95,6 +95,26 @@ the helper binary retains `__assert_fail` references, addressing the risk that
 release-mode `NDEBUG` could erase its assertion-based checks. These component
 checks do not exercise the complete patched compiler or its cache lifecycle.
 
+The helper's per-file extension was independently reviewed and rerun against real
+Rust bitcode from the explicitly identified stage0 Rust 1.101.0-beta.1 compiler.
+`bash /workspace/work/llvm-real-bitcode/run-real.sh` physically inserts one line
+into a no-std `wrapping_mul` fixture with synthetic, local, and core debug files.
+The helper accepts the relocation and its refreshed optimized bitcode exactly
+equals a clean shifted optimized module (`status=0 accepted=1
+clean_bitcode_equal=1`). The helper session's backward-move control also reports
+exact clean equality; its real body change is rejected (`status=1 accepted=0`).
+These logs are retained under `results/helper-stage0/`. Preoptimization bitcode
+uses `-Cno-prepopulate-passes` as an approximation, so this remains component
+evidence rather than an integrated compiler or Rust 1.100 result.
+
+Independent review identified an unbounded `fs::read` before manifest size
+validation. Backend commit `eb28c522800` bounds reads before allocation and adds
+an oversize-cache integration regression. Source review and Rust checking cover
+the fix; the compiler integration regression still needs execution. The broader
+per-file debug proof preserves unchanged external file data and inline ownership,
+and rejects ambiguous file identities/nonuniform shifts. Review found no further
+concrete correctness defect, which is not proof of correctness.
+
 ## Still unvalidated
 
 The unpatched `5f4effd579500175af844241eb179e756190f1e7` compiler and patched
