@@ -1,0 +1,1016 @@
+{
+  "workload": "Headless Bevy v0.18.0 ECS consumer",
+  "bevy_revision": "5f8270f2e049f90139a503d1e930070d926f9427",
+  "lockfile_sha256": "8ae366fefb7790c3124f99ec3dd9013274abf28e4b49392f045e46d0c7ba3fcd",
+  "cargo_version": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+  "harness_sha256": "0c08c529eceb7a306766fd3195bd0fc4037386e339b7ba02090c51e26d673f19",
+  "capture_wrapper_sha256": "b396bd1720a89fdda143267aa26ff3e418aec4b8112b32fc59d346479abe929d",
+  "profiles": [
+    [
+      0,
+      "z"
+    ]
+  ],
+  "cargo_jobs": 1,
+  "codegen_units": 16,
+  "seed": 1729,
+  "compilers": [
+    {
+      "name": "patched-controlled-off-6dd88db2",
+      "identity": "rustc 1.102.0-dev (6dd88db29 2026-11-14)\nbinary: rustc\ncommit-hash: 6dd88db2949b3173124de6f722f362678388e0d8\ncommit-date: 2026-11-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.102.0-dev\nLLVM version: 23.1.5",
+      "cargo_visible_flags": [
+        "-Clto=off",
+        "-Cembed-bitcode=no"
+      ],
+      "controlled_experiment": "off",
+      "streaming_capture_wrapper": true
+    },
+    {
+      "name": "patched-controlled-on-6dd88db2",
+      "identity": "rustc 1.102.0-dev (6dd88db29 2026-11-14)\nbinary: rustc\ncommit-hash: 6dd88db2949b3173124de6f722f362678388e0d8\ncommit-date: 2026-11-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.102.0-dev\nLLVM version: 23.1.5",
+      "cargo_visible_flags": [
+        "-Clto=off",
+        "-Cembed-bitcode=no"
+      ],
+      "controlled_experiment": "on",
+      "streaming_capture_wrapper": true
+    }
+  ],
+  "successful_samples": 30,
+  "successful_samples_per_cell": 5,
+  "raw_samples": [
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "repeat": 1,
+      "wall_seconds": 4.080953256998328,
+      "exit_code": 0,
+      "peak_rss_kib": 627364,
+      "artifact_bytes": 58824102
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "repeat": 3,
+      "wall_seconds": 3.5716687820022344,
+      "exit_code": 0,
+      "peak_rss_kib": 627232,
+      "artifact_bytes": 58824102
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "repeat": 0,
+      "wall_seconds": 4.172021352998854,
+      "exit_code": 0,
+      "peak_rss_kib": 625628,
+      "artifact_bytes": 58824102
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "repeat": 4,
+      "wall_seconds": 4.156399052000779,
+      "exit_code": 0,
+      "peak_rss_kib": 626632,
+      "artifact_bytes": 58824102
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "repeat": 2,
+      "wall_seconds": 3.4724800000039977,
+      "exit_code": 0,
+      "peak_rss_kib": 642340,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "repeat": 0,
+      "wall_seconds": 3.6868925479939207,
+      "exit_code": 0,
+      "peak_rss_kib": 643268,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "repeat": 2,
+      "wall_seconds": 0.06343626099987887,
+      "exit_code": 0,
+      "peak_rss_kib": 38300,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "repeat": 3,
+      "wall_seconds": 0.05253105200245045,
+      "exit_code": 0,
+      "peak_rss_kib": 38288,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "repeat": 0,
+      "wall_seconds": 0.048754420000477694,
+      "exit_code": 0,
+      "peak_rss_kib": 38292,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "repeat": 1,
+      "wall_seconds": 0.05030847700254526,
+      "exit_code": 0,
+      "peak_rss_kib": 37856,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "repeat": 1,
+      "wall_seconds": 4.373021753002831,
+      "exit_code": 0,
+      "peak_rss_kib": 640792,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "repeat": 2,
+      "wall_seconds": 3.8491380010018474,
+      "exit_code": 0,
+      "peak_rss_kib": 629648,
+      "artifact_bytes": 58824102
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "repeat": 0,
+      "wall_seconds": 4.2359769199974835,
+      "exit_code": 0,
+      "peak_rss_kib": 640792,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "repeat": 4,
+      "wall_seconds": 4.059942376996332,
+      "exit_code": 0,
+      "peak_rss_kib": 642676,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "repeat": 4,
+      "wall_seconds": 0.06652228999882936,
+      "exit_code": 0,
+      "peak_rss_kib": 38176,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "repeat": 1,
+      "wall_seconds": 0.05496860099810874,
+      "exit_code": 0,
+      "peak_rss_kib": 38032,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "repeat": 3,
+      "wall_seconds": 0.0604562260050443,
+      "exit_code": 0,
+      "peak_rss_kib": 38428,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "repeat": 1,
+      "wall_seconds": 4.104813379999541,
+      "exit_code": 0,
+      "peak_rss_kib": 631248,
+      "artifact_bytes": 58824102
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "repeat": 4,
+      "wall_seconds": 0.05431449299794622,
+      "exit_code": 0,
+      "peak_rss_kib": 38168,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "repeat": 1,
+      "wall_seconds": 3.912703109999711,
+      "exit_code": 0,
+      "peak_rss_kib": 645532,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "repeat": 3,
+      "wall_seconds": 3.9860595560021466,
+      "exit_code": 0,
+      "peak_rss_kib": 625984,
+      "artifact_bytes": 58824102
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "repeat": 4,
+      "wall_seconds": 3.972977149998769,
+      "exit_code": 0,
+      "peak_rss_kib": 643084,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "repeat": 3,
+      "wall_seconds": 4.318453512998531,
+      "exit_code": 0,
+      "peak_rss_kib": 642432,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "repeat": 0,
+      "wall_seconds": 4.011674083005346,
+      "exit_code": 0,
+      "peak_rss_kib": 626012,
+      "artifact_bytes": 58824102
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "repeat": 2,
+      "wall_seconds": 4.324633612006437,
+      "exit_code": 0,
+      "peak_rss_kib": 646792,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "repeat": 2,
+      "wall_seconds": 3.8990053240049747,
+      "exit_code": 0,
+      "peak_rss_kib": 625760,
+      "artifact_bytes": 58824102
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "repeat": 2,
+      "wall_seconds": 0.06152303000271786,
+      "exit_code": 0,
+      "peak_rss_kib": 38180,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "repeat": 0,
+      "wall_seconds": 0.05047909800487105,
+      "exit_code": 0,
+      "peak_rss_kib": 38408,
+      "artifact_bytes": 58824070
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "repeat": 4,
+      "wall_seconds": 4.549860412000271,
+      "exit_code": 0,
+      "peak_rss_kib": 627548,
+      "artifact_bytes": 58824102
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "repeat": 3,
+      "wall_seconds": 4.364624027999525,
+      "exit_code": 0,
+      "peak_rss_kib": 640020,
+      "artifact_bytes": 58824070
+    }
+  ],
+  "summary": [
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "n": 5,
+      "median_seconds": 4.080953256998328,
+      "min_seconds": 3.5716687820022344,
+      "max_seconds": 4.549860412000271,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "n": 5,
+      "median_seconds": 0.05496860099810874,
+      "min_seconds": 0.048754420000477694,
+      "max_seconds": 0.06652228999882936,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "n": 5,
+      "median_seconds": 4.324633612006437,
+      "min_seconds": 4.059942376996332,
+      "max_seconds": 4.373021753002831,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "n": 5,
+      "median_seconds": 4.011674083005346,
+      "min_seconds": 3.8491380010018474,
+      "max_seconds": 4.156399052000779,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "n": 5,
+      "median_seconds": 0.05431449299794622,
+      "min_seconds": 0.05030847700254526,
+      "max_seconds": 0.06152303000271786,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "n": 5,
+      "median_seconds": 3.912703109999711,
+      "min_seconds": 3.4724800000039977,
+      "max_seconds": 4.318453512998531,
+      "sufficient_repeated_samples": true
+    }
+  ],
+  "identity_audit": {
+    "same_compiler_path": true,
+    "matching_crate_metadata": true,
+    "separate_incremental_paths": true,
+    "mode_flags_verified": true,
+    "report_and_time_passes_absent": true,
+    "compiled_unit_identity_count_per_mode": 59,
+    "identities": [
+      {
+        "crate": "async_task",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=7093437684ec7690",
+          "extra-filename=-3f6db90370f9b5ac"
+        ]
+      },
+      {
+        "crate": "atomic_waker",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=6e7b63e94bb2f702",
+          "extra-filename=-300b23c0fb65b7f7"
+        ]
+      },
+      {
+        "crate": "bevy_ecs",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=7d1260b3f4e8c671",
+          "extra-filename=-c825433c70d3d7c8"
+        ]
+      },
+      {
+        "crate": "bevy_ecs_macros",
+        "kind": "proc-macro",
+        "metadata_tokens": [
+          "metadata=7352f5510f2c7d3e",
+          "extra-filename=-5ad60d28c6d3f64b"
+        ]
+      },
+      {
+        "crate": "bevy_macro_utils",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=cdf5592ad0a1c2e6",
+          "extra-filename=-69d1e114571b349b"
+        ]
+      },
+      {
+        "crate": "bevy_platform",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=0a810156c556a8e3",
+          "extra-filename=-2ae4bf08fe2ac0b8"
+        ]
+      },
+      {
+        "crate": "bevy_ptr",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=2d3da1c013d22ac0",
+          "extra-filename=-ba0c338975806d74"
+        ]
+      },
+      {
+        "crate": "bevy_tasks",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=54f38c499b6462da",
+          "extra-filename=-ca2b0fb7c8d2d72a"
+        ]
+      },
+      {
+        "crate": "bevy_utils",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=da7e5fe039615800",
+          "extra-filename=-a6ba3f8aa8de58b0"
+        ]
+      },
+      {
+        "crate": "bitflags",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=adbb77013572108c",
+          "extra-filename=-67e7b30ea46688b6"
+        ]
+      },
+      {
+        "crate": "build_script_build",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=054081156e3e7940"
+        ]
+      },
+      {
+        "crate": "build_script_build",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=57f133b785dd1f41"
+        ]
+      },
+      {
+        "crate": "build_script_build",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=587149422eb9ac17"
+        ]
+      },
+      {
+        "crate": "build_script_build",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=6bcd71f21d0e57ad"
+        ]
+      },
+      {
+        "crate": "build_script_build",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=c687f54d606c32f1"
+        ]
+      },
+      {
+        "crate": "bumpalo",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=098b2aac56932a3c",
+          "extra-filename=-68b294bf3336c94e"
+        ]
+      },
+      {
+        "crate": "cfg_if",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=de60c2a86c0a15a6",
+          "extra-filename=-67464e06c9433f21"
+        ]
+      },
+      {
+        "crate": "concurrent_queue",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=73823ea93faa0de6",
+          "extra-filename=-78038760280520d3"
+        ]
+      },
+      {
+        "crate": "convert_case",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=9b25baf7c2341993",
+          "extra-filename=-efd925dfc6602c39"
+        ]
+      },
+      {
+        "crate": "crossbeam_queue",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=f36d99a1505c23c8",
+          "extra-filename=-19aef0fc3cfd9008"
+        ]
+      },
+      {
+        "crate": "crossbeam_utils",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=c21afae630797493",
+          "extra-filename=-554bd87a1b17bcd6"
+        ]
+      },
+      {
+        "crate": "derive_more",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=f31bcbd37d77c4db",
+          "extra-filename=-8a16bc03ac6901c9"
+        ]
+      },
+      {
+        "crate": "derive_more_impl",
+        "kind": "proc-macro",
+        "metadata_tokens": [
+          "metadata=998de578314fe702",
+          "extra-filename=-72531b67f5c08e1c"
+        ]
+      },
+      {
+        "crate": "disqualified",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=2536a29ebecd5dd8",
+          "extra-filename=-d6c9aa88d2690ce6"
+        ]
+      },
+      {
+        "crate": "equivalent",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=5998fd7e627bb8d1",
+          "extra-filename=-58b2d83e0c17cc11"
+        ]
+      },
+      {
+        "crate": "equivalent",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=e53ffbb159784c32",
+          "extra-filename=-257f2501bcf0cce0"
+        ]
+      },
+      {
+        "crate": "fixedbitset",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=448c983fb0078159",
+          "extra-filename=-20690d8a499ccaba"
+        ]
+      },
+      {
+        "crate": "foldhash",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=384a16b9cd4829ba",
+          "extra-filename=-8238b850b40a8b49"
+        ]
+      },
+      {
+        "crate": "futures_core",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=72a79a7cbacdccf2",
+          "extra-filename=-14a154222ca63043"
+        ]
+      },
+      {
+        "crate": "futures_lite",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=4454865dabb01d18",
+          "extra-filename=-2d08c1be05f77549"
+        ]
+      },
+      {
+        "crate": "hashbrown",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=217522223c77ccb9",
+          "extra-filename=-472a8a5a0ba6169e"
+        ]
+      },
+      {
+        "crate": "hashbrown",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=9bbd931d70dfc80e",
+          "extra-filename=-97a04f599e888a08"
+        ]
+      },
+      {
+        "crate": "hashbrown",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=c9dd603b60b283d2",
+          "extra-filename=-7e2d95335c393a95"
+        ]
+      },
+      {
+        "crate": "indexmap",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=0ec8b349c2d86aed",
+          "extra-filename=-a95f9659671bea3d"
+        ]
+      },
+      {
+        "crate": "indexmap",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=b231bbfaeb803dfe",
+          "extra-filename=-9d7af4e2fb565738"
+        ]
+      },
+      {
+        "crate": "log",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=599f9a683fa80fa4",
+          "extra-filename=-c81f6cc448ad77eb"
+        ]
+      },
+      {
+        "crate": "nonmax",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=2df690d656d0f813",
+          "extra-filename=-21a557c5060911bf"
+        ]
+      },
+      {
+        "crate": "pin_project_lite",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=7e737b8fc85ff416",
+          "extra-filename=-896b191752c78033"
+        ]
+      },
+      {
+        "crate": "proc_macro2",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=ea74eeed9efc125e",
+          "extra-filename=-c64085966bb98814"
+        ]
+      },
+      {
+        "crate": "quote",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=35619cb7b5d7cb65",
+          "extra-filename=-231b0b10902225a0"
+        ]
+      },
+      {
+        "crate": "relocation_bevy_ecs_consumer",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=534959d086323b9c"
+        ]
+      },
+      {
+        "crate": "slotmap",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=80494af8dfa06394",
+          "extra-filename=-d5a0c291da026baf"
+        ]
+      },
+      {
+        "crate": "smallvec",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=55bd3778b6de2809",
+          "extra-filename=-1b03c38aead86905"
+        ]
+      },
+      {
+        "crate": "spin",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=6fa94d2b21a35ab7",
+          "extra-filename=-563ffaa5b3c3ceb8"
+        ]
+      },
+      {
+        "crate": "syn",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=38e78c104bf4de60",
+          "extra-filename=-fab90de05e47c331"
+        ]
+      },
+      {
+        "crate": "syn",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=f3bcca995ecab26b",
+          "extra-filename=-3969b4c180cfd31f"
+        ]
+      },
+      {
+        "crate": "thiserror",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=98a5721d52b5062d",
+          "extra-filename=-5cdc40520f06d9fe"
+        ]
+      },
+      {
+        "crate": "thiserror_impl",
+        "kind": "proc-macro",
+        "metadata_tokens": [
+          "metadata=5ae6a2252e678623",
+          "extra-filename=-9afb11538477e8d1"
+        ]
+      },
+      {
+        "crate": "thread_local",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=c64c39c0909afb31",
+          "extra-filename=-9cb27d2c78db0986"
+        ]
+      },
+      {
+        "crate": "toml_datetime",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=45e261bcfaed36d2",
+          "extra-filename=-07e86a87601d4029"
+        ]
+      },
+      {
+        "crate": "toml_edit",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=41a89e7c91456938",
+          "extra-filename=-4ec351487cf2d57b"
+        ]
+      },
+      {
+        "crate": "toml_parser",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=f5a9037734b9cfa7",
+          "extra-filename=-5c4fbb5e1d65c38a"
+        ]
+      },
+      {
+        "crate": "unicode_ident",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=71dcfb0016093396",
+          "extra-filename=-543352a8021751f9"
+        ]
+      },
+      {
+        "crate": "unicode_segmentation",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=8ff1804a13793f47",
+          "extra-filename=-d907deca868d1309"
+        ]
+      },
+      {
+        "crate": "unicode_xid",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=d6bf2c97179f837f",
+          "extra-filename=-a8bf2c3b638f5c50"
+        ]
+      },
+      {
+        "crate": "variadics_please",
+        "kind": "proc-macro",
+        "metadata_tokens": [
+          "metadata=8a63d24bdb5f4be2",
+          "extra-filename=-b95777195ebd1d26"
+        ]
+      },
+      {
+        "crate": "version_check",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=52bd3b9fe7ef57c7",
+          "extra-filename=-db90ba613abec379"
+        ]
+      },
+      {
+        "crate": "winnow",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=4561d6e3a3b0af49",
+          "extra-filename=-eb51f5937902941c"
+        ]
+      },
+      {
+        "crate": "winnow",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=800ac5682c6fe156",
+          "extra-filename=-0d03558b98c45c5c"
+        ]
+      }
+    ]
+  },
+  "untimed_diagnostic_samples_per_case": 1,
+  "diagnostics": [
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "top",
+      "exit_code": 0,
+      "relocation": {
+        "report_status": "reported",
+        "cargo_compilation_seen": true,
+        "captured_rustc_invocations": 2,
+        "cargo_report_lines_ignored": 64,
+        "total_cgu_events": 32,
+        "outcomes": {
+          "ordinary_reuse": 30,
+          "fallback": 1,
+          "accepted": 1
+        },
+        "reasons": {
+          "green_post_lto": 30,
+          "semantic_ir_differs": 1,
+          "validated_identical_ir": 1
+        },
+        "skipped": {
+          "mir_to_llvm_and_llvm_backend": 30,
+          "none": 1,
+          "llvm_optimization": 1
+        },
+        "eligible_candidates": 1,
+        "supported_dirty_candidates": 2,
+        "candidate_fallbacks": 1,
+        "fallback_fraction_of_supported_candidates": 0.5,
+        "cache_writes": {
+          "carried": 30,
+          "written": 2
+        },
+        "fallback_fraction_of_all_cgus": 0.03125
+      }
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "noop",
+      "exit_code": 0,
+      "relocation": {
+        "report_status": "no_rustc_invocation",
+        "cargo_compilation_seen": false,
+        "captured_rustc_invocations": 0,
+        "cargo_report_lines_ignored": 64,
+        "total_cgu_events": 0,
+        "outcomes": {},
+        "reasons": {},
+        "skipped": {},
+        "eligible_candidates": null,
+        "supported_dirty_candidates": null,
+        "candidate_fallbacks": null,
+        "fallback_fraction_of_supported_candidates": null,
+        "cache_writes": {},
+        "fallback_fraction_of_all_cgus": null
+      }
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 0,
+      "opt": "z",
+      "case": "body",
+      "exit_code": 0,
+      "relocation": {
+        "report_status": "reported",
+        "cargo_compilation_seen": true,
+        "captured_rustc_invocations": 2,
+        "cargo_report_lines_ignored": 64,
+        "total_cgu_events": 32,
+        "outcomes": {
+          "ordinary_reuse": 30,
+          "fallback": 2
+        },
+        "reasons": {
+          "green_post_lto": 30,
+          "semantic_ir_differs": 2
+        },
+        "skipped": {
+          "mir_to_llvm_and_llvm_backend": 30,
+          "none": 2
+        },
+        "eligible_candidates": 0,
+        "supported_dirty_candidates": 2,
+        "candidate_fallbacks": 2,
+        "fallback_fraction_of_supported_candidates": 1.0,
+        "cache_writes": {
+          "carried": 30,
+          "written": 2
+        },
+        "fallback_fraction_of_all_cgus": 0.0625
+      }
+    }
+  ]
+}

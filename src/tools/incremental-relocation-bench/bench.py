@@ -1,0 +1,240 @@
+#!/usr/bin/env python3
+"""Fork-only physical-edit benchmark. Results are JSON, including failed builds."""
+import argparse
+import collections
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import random
+import re
+import statistics
+import subprocess
+import time
+
+
+CASES = ["noop", "touch", "top", "generic", "function", "type", "bottom", "compensated", "body"]
+
+
+def edit(source, case, cfg):
+    if case in ("noop", "touch"):
+        return source
+    if case == "top":
+        return "\n" + source
+    if case == "bottom":
+        pos = source.index(cfg["bottom_marker"]) if "bottom_marker" in cfg else source.rfind("\n}")
+        assert pos >= 0
+        return source[:pos] + "\n" + source[pos:]
+    marker = cfg.get("function_marker", cfg.get("generic_marker")) if case in ("generic", "function", "compensated") else cfg["type_marker"]
+    if case == "body":
+        old, new = cfg["body_replace"]
+        assert source.count(old) == 1
+        return source.replace(old, new, 1)
+    assert source.count(marker) == 1, marker
+    pos = source.index(marker)
+    result = source[:pos] + "\n" + source[pos:]
+    if case == "compensated":
+        end = source.index(cfg["compensated_end_marker"], pos)
+        assert source[end - 2:end] == "\n\n"
+        result = result[:end] + result[end + 1:]
+        assert result.count("\n") == source.count("\n")
+    return result
+
+
+def capture(command, **kwargs):
+    return subprocess.check_output(command, text=True, **kwargs).strip()
+
+
+def compiler_identity(cfg, compiler):
+    env = os.environ.copy()
+    env.update(cfg.get("environment", {}))
+    env.update(compiler.get("environment", {}))
+    return capture([compiler["rustc"], "-Vv"], env=env)
+
+
+def validate_controls(cfg, diagnostics_run=False):
+    names = [compiler["name"] for compiler in cfg["compilers"]]
+    assert len(names) == len(set(names)), "compiler names must select distinct target directories"
+    controls = [compiler for compiler in cfg["compilers"] if "controlled_experiment" in compiler]
+    for compiler in controls:
+        assert compiler["controlled_experiment"] in ("off", "on")
+        visible_flags = compiler.get("flags", []) + compiler.get("diagnostic_flags", [])
+        assert not any("incremental-source-relocation" in flag for flag in visible_flags)
+    if controls and not diagnostics_run:
+        assert sorted(compiler["controlled_experiment"] for compiler in controls) == ["off", "on"]
+        for field in ("rustc", "flags", "environment"):
+            assert controls[0].get(field) == controls[1].get(field), f"controlled pair must share {field}"
+
+
+def summarize(records):
+    groups = collections.defaultdict(list)
+    for row in records:
+        if row["exit_code"] == 0:
+            groups[(row["compiler"], row["debug"], row["opt"], row["case"])].append(row["wall_seconds"])
+    return [{"compiler": k[0], "debug": k[1], "opt": k[2], "case": k[3],
+             "n": len(v), "median_seconds": statistics.median(v),
+             "min_seconds": min(v), "max_seconds": max(v),
+             "sufficient_repeated_samples": len(v) >= 5} for k, v in sorted(groups.items(), key=lambda item: tuple(map(str, item[0])))]
+
+
+def diagnostics(log, invocation_directory=None):
+    events = []
+    writes = collections.Counter()
+    text = log.read_text()
+    cargo_compilation_seen = bool(re.search(r"^\s*Compiling ", text, re.MULTILINE))
+    invocation_logs = sorted(invocation_directory.glob("*.stderr")) if invocation_directory else None
+    report_text = "\n".join(path.read_text() for path in invocation_logs) if invocation_logs is not None else text
+    for line in report_text.splitlines():
+        if line.startswith("rustc-relocation: "):
+            event = json.loads(line.removeprefix("rustc-relocation: "))
+            assert event["schema"] == 1
+            if event["event"] == "cache_write":
+                writes[event["reason"]] += 1
+                continue
+            assert event["event"] == "cgu"
+            events.append(event)
+    count = sum(event["count"] for event in events)
+    outcomes = collections.Counter()
+    reasons = collections.Counter()
+    skipped = collections.Counter()
+    eligible = 0
+    candidates = 0
+    candidate_fallbacks = 0
+    eligibility_known = True
+    candidates_known = True
+    for event in events:
+        outcomes[event["outcome"]] += event["count"]
+        reasons[event["reason"]] += event["count"]
+        skipped[event["skipped"]] += event["count"]
+        eligibility_known &= "eligible" in event
+        eligible += event["count"] if event.get("eligible") else 0
+        candidates_known &= "candidate" in event
+        candidates += event["count"] if event.get("candidate") else 0
+        if event.get("candidate") and event["outcome"] == "fallback":
+            candidate_fallbacks += event["count"]
+    return {"report_status": "reported" if count else "no_rustc_invocation" if invocation_logs == [] else "missing" if cargo_compilation_seen else "no_cargo_compilation_seen",
+            "cargo_compilation_seen": cargo_compilation_seen,
+            "captured_rustc_invocations": len(invocation_logs) if invocation_logs is not None else None,
+            "cargo_report_lines_ignored": text.count("rustc-relocation: ") if invocation_logs is not None else 0,
+            "total_cgu_events": count, "outcomes": dict(outcomes), "reasons": dict(reasons),
+            "skipped": dict(skipped), "eligible_candidates": eligible if eligibility_known and count else None,
+            "supported_dirty_candidates": candidates if candidates_known and count else None,
+            "candidate_fallbacks": candidate_fallbacks if candidates_known and count else None,
+            "fallback_fraction_of_supported_candidates": candidate_fallbacks / candidates if candidates_known and candidates else None,
+            "cache_writes": dict(writes),
+            "fallback_fraction_of_all_cgus": outcomes["fallback"] / count if count else None}
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config", type=Path)
+    parser.add_argument("--repeats", type=int, default=5)
+    parser.add_argument("--cases", nargs="+", choices=CASES, default=[case for case in CASES if case != "function"])
+    parser.add_argument("--diagnostics", action="store_true")
+    args = parser.parse_args()
+    cfg = json.loads(args.config.read_text())
+    validate_controls(cfg, args.diagnostics)
+    out = Path(cfg["output"]).resolve()
+    out.mkdir(parents=True, exist_ok=True)
+    record_path = out / ("diagnostics.jsonl" if args.diagnostics else "raw.jsonl")
+    if record_path.exists():
+        raise RuntimeError(f"refusing to mix previous records: {record_path}")
+    lock = (out / "benchmark.lock").open("w")
+    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    source_path = Path(cfg["edited_source"])
+    original = source_path.read_bytes()
+    source = original.decode()
+    records = []
+    metadata = {"config": cfg, "seed": cfg.get("seed", 1729),
+                "harness_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                "capture_wrapper_sha256": hashlib.sha256(Path(__file__).with_name("capture-rustc.py").read_bytes()).hexdigest(),
+                "source_sha256": hashlib.sha256(original).hexdigest(),
+                "cargo_version": capture([cfg["cargo"], "-V"]),
+                "repository_commit": capture(["git", "-C", cfg.get("repository", cfg.get("bevy")), "rev-parse", "HEAD"]),
+                "lockfile_sha256": hashlib.sha256(Path(cfg["manifest"]).with_name("Cargo.lock").read_bytes()).hexdigest(),
+                "compilers": {c["name"]: compiler_identity(cfg, c) for c in cfg["compilers"]}}
+    (out / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
+    trials = [(repeat, debug, opt, case, compiler) for repeat in range(args.repeats)
+              for debug, opt in cfg["profiles"] for case in args.cases for compiler in cfg["compilers"]]
+    random.Random(metadata["seed"]).shuffle(trials)
+    try:
+        for number, (repeat, debug, opt, case, compiler) in enumerate(trials):
+            key = f'{compiler["name"]}-debug{debug}-opt{opt}'
+            target = Path(cfg.get("target_root", out / "targets")) / key
+            env = os.environ.copy()
+            env.update(cfg.get("environment", {}))
+            env.update(compiler.get("environment", {}))
+            env.update({"RUSTC": compiler["rustc"], "CARGO_TARGET_DIR": str(target),
+                        "CARGO_INCREMENTAL": "1", "CARGO_BUILD_JOBS": str(cfg["jobs"]),
+                        "CARGO_PROFILE_DEV_DEBUG": str(debug), "CARGO_PROFILE_DEV_OPT_LEVEL": str(opt),
+                        "CARGO_PROFILE_DEV_CODEGEN_UNITS": str(cfg.get("codegen_units", 16)),
+                        "CARGO_ENCODED_RUSTFLAGS": "\x1f".join(compiler.get("flags", []))})
+            controlled_mode = compiler.get("controlled_experiment")
+            wrapped = args.diagnostics or compiler.get("capture_invocations", False) or controlled_mode is not None
+            for variable in ("RELOCATION_EXPERIMENT_MODE", "RELOCATION_INJECT_REPORT", "RELOCATION_TIME_PASSES_CRATES"):
+                env.pop(variable, None)
+            if args.diagnostics:
+                env.update(compiler.get("diagnostic_env", {}))
+                diagnostic_flags = list(compiler.get("diagnostic_flags", []))
+                if "-Zincremental-relocation-report" in diagnostic_flags:
+                    env["RELOCATION_INJECT_REPORT"] = "1"
+                    diagnostic_flags.remove("-Zincremental-relocation-report")
+                if diagnostic_flags:
+                    env["CARGO_ENCODED_RUSTFLAGS"] += "\x1f" + "\x1f".join(diagnostic_flags)
+            if controlled_mode is not None:
+                env["RELOCATION_EXPERIMENT_MODE"] = controlled_mode
+            if wrapped:
+                if env.get("RUSTC_WRAPPER") or env.get("RUSTC_WORKSPACE_WRAPPER"):
+                    raise RuntimeError("compiler capture requires rustc without another compiler wrapper")
+                env["RUSTC_WRAPPER"] = str(Path(__file__).with_name("capture-rustc.py").resolve())
+            command = [cfg["cargo"], "build", "--locked", "--offline", "--manifest-path", cfg["manifest"], *cfg.get("cargo_args", [])]
+            cwd = cfg.get("cwd", str(Path(cfg["manifest"]).parent))
+            stem = f'{number:05d}-{key}-{case}-r{repeat}'
+            source_path.write_bytes(original)
+            if wrapped:
+                env["RELOCATION_RUSTC_CAPTURE_DIR"] = str(out / (stem + "-prime-rustc"))
+            with (out / (stem + "-prime.log")).open("w") as log:
+                prime = subprocess.run(command, env=env, cwd=cwd, stdout=log, stderr=subprocess.STDOUT)
+            if prime.returncode:
+                row = {"compiler": compiler["name"], "debug": debug, "opt": opt,
+                       "case": case, "repeat": repeat, "wall_seconds": None,
+                       "exit_code": prime.returncode, "stage": "prime",
+                       "diagnostics_run": args.diagnostics, "log": stem + "-prime.log"}
+                records.append(row)
+                with record_path.open("a") as file:
+                    file.write(json.dumps(row) + "\n")
+                print(json.dumps(row), flush=True)
+                continue
+            if case == "touch":
+                os.utime(source_path, None)
+            elif case != "noop":
+                source_path.write_text(edit(source, case, cfg))
+            invocation_directory = out / (stem + "-rustc")
+            if wrapped:
+                env["RELOCATION_RUSTC_CAPTURE_DIR"] = str(invocation_directory)
+            with (out / (stem + ".log")).open("w") as log:
+                start = time.perf_counter()
+                build = subprocess.Popen(command, env=env, cwd=cwd, stdout=log, stderr=subprocess.STDOUT)
+                _, status, usage = os.wait4(build.pid, 0)
+                build.returncode = os.waitstatus_to_exitcode(status)
+                elapsed = time.perf_counter() - start
+            row = {"compiler": compiler["name"], "debug": debug, "opt": opt,
+                   "case": case, "repeat": repeat, "wall_seconds": elapsed,
+                   "exit_code": build.returncode, "diagnostics_run": args.diagnostics,
+                   "peak_rss_kib": usage.ru_maxrss, "log": stem + ".log",
+                   "artifact_bytes": sum(p.stat().st_size for p in (target / "debug").rglob("*.rlib"))}
+            records.append(row)
+            if args.diagnostics:
+                row["relocation"] = diagnostics(out / (stem + ".log"), invocation_directory)
+            with record_path.open("a") as file:
+                file.write(json.dumps(row) + "\n")
+            print(json.dumps(row), flush=True)
+    finally:
+        source_path.write_bytes(original)
+        if not args.diagnostics:
+            (out / "summary.json").write_text(json.dumps(summarize(records), indent=2) + "\n")
+
+
+if __name__ == "__main__":
+    main()

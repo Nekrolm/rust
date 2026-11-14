@@ -1,0 +1,64 @@
+{
+  "compiler": "rustc 1.100.0 (0ef1bc386 2026-11-09)\nbinary: rustc\ncommit-hash: 0ef1bc386059596dada8fb65b50425aab2ea637a\ncommit-date: 2026-11-09\nhost: x86_64-unknown-linux-gnu\nrelease: 1.100.0\nLLVM version: 23.1.5\n",
+  "flags": [],
+  "crlf": true,
+  "cases": [
+    {
+      "debug": 0,
+      "shift": 1,
+      "runtime_matches_clean": true
+    },
+    {
+      "debug": 0,
+      "shift": 3,
+      "runtime_matches_clean": true
+    },
+    {
+      "debug": 0,
+      "shift": 2,
+      "runtime_matches_clean": true
+    },
+    {
+      "debug": 1,
+      "shift": 1,
+      "runtime_matches_clean": true,
+      "decoded_line_multiset_matches_clean": true,
+      "declaration_and_inline_line_multiset_matches_clean": true
+    },
+    {
+      "debug": 1,
+      "shift": 3,
+      "runtime_matches_clean": true,
+      "decoded_line_multiset_matches_clean": true,
+      "declaration_and_inline_line_multiset_matches_clean": true
+    },
+    {
+      "debug": 1,
+      "shift": 2,
+      "runtime_matches_clean": true,
+      "decoded_line_multiset_matches_clean": true,
+      "declaration_and_inline_line_multiset_matches_clean": true
+    },
+    {
+      "debug": 2,
+      "shift": 1,
+      "runtime_matches_clean": true,
+      "decoded_line_multiset_matches_clean": true,
+      "declaration_and_inline_line_multiset_matches_clean": true
+    },
+    {
+      "debug": 2,
+      "shift": 3,
+      "runtime_matches_clean": true,
+      "decoded_line_multiset_matches_clean": true,
+      "declaration_and_inline_line_multiset_matches_clean": true
+    },
+    {
+      "debug": 2,
+      "shift": 2,
+      "runtime_matches_clean": true,
+      "decoded_line_multiset_matches_clean": true,
+      "declaration_and_inline_line_multiset_matches_clean": true
+    }
+  ]
+}

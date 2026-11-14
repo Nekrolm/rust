@@ -1,0 +1,13 @@
+supported=1 files=3 lines=13
+file=/workspace/work/llvm-real-bitcode/sample.rs/@/sample.332c23f23689b670-cgu.0
+file=work/llvm-real-bitcode/sample.rs
+file=library/core/src/num/uint_macros.rs
+supported=1 files=3 lines=13
+file=/workspace/work/llvm-real-bitcode/sample.rs/@/sample.332c23f23689b670-cgu.0
+file=work/llvm-real-bitcode/sample.rs
+file=library/core/src/num/uint_macros.rs
+supported=1 files=3 lines=12
+file=/workspace/work/llvm-real-bitcode/sample.rs/@/sample.332c23f23689b670-cgu.0
+file=work/llvm-real-bitcode/sample.rs
+file=library/core/src/num/uint_macros.rs
+status=1 accepted=0

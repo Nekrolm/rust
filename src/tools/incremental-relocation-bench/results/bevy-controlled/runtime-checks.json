@@ -1,0 +1,44 @@
+[
+  {
+    "compiler": "official-1.100.0",
+    "debug": 2,
+    "opt": 1,
+    "exit_code": 0,
+    "stdout": "10"
+  },
+  {
+    "compiler": "unpatched-0fd799",
+    "debug": 2,
+    "opt": 1,
+    "exit_code": 0,
+    "stdout": "10"
+  },
+  {
+    "compiler": "patched-controlled-off-6dd88db2",
+    "debug": 2,
+    "opt": 1,
+    "exit_code": 0,
+    "stdout": "10"
+  },
+  {
+    "compiler": "patched-controlled-on-6dd88db2",
+    "debug": 2,
+    "opt": 1,
+    "exit_code": 0,
+    "stdout": "10"
+  },
+  {
+    "compiler": "patched-controlled-off-6dd88db2",
+    "debug": 0,
+    "opt": "z",
+    "exit_code": 0,
+    "stdout": "10"
+  },
+  {
+    "compiler": "patched-controlled-on-6dd88db2",
+    "debug": 0,
+    "opt": "z",
+    "exit_code": 0,
+    "stdout": "10"
+  }
+]

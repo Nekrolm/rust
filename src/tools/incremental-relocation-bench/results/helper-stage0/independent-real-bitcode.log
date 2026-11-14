@@ -1,0 +1,33 @@
++ fixture_dir=/workspace/work/llvm-real-bitcode
++ fixture_rustc=/workspace/rust/build/x86_64-unknown-linux-gnu/stage0/bin/rustc
++ /workspace/rust/build/x86_64-unknown-linux-gnu/stage0/bin/rustc -Vv
+rustc 1.101.0-beta.1 (bbcdfd90a 2026-11-10)
+binary: rustc
+commit-hash: bbcdfd90a3f81ca2a5f6d69b943a6ff0d8582102
+commit-date: 2026-11-10
+host: x86_64-unknown-linux-gnu
+release: 1.101.0-beta.1
+LLVM version: 23.1.5
++ cat
++ fixture_flags=("$fixture_dir/sample.rs" --crate-name sample --crate-type lib -Ccodegen-units=1 -Copt-level=2 -Cdebuginfo=2 -Clto=off -Cembed-bitcode=no --emit=llvm-bc)
++ /workspace/rust/build/x86_64-unknown-linux-gnu/stage0/bin/rustc /workspace/work/llvm-real-bitcode/sample.rs --crate-name sample --crate-type lib -Ccodegen-units=1 -Copt-level=2 -Cdebuginfo=2 -Clto=off -Cembed-bitcode=no --emit=llvm-bc -Cno-prepopulate-passes -o /workspace/work/llvm-real-bitcode/old-pre.bc
++ /workspace/rust/build/x86_64-unknown-linux-gnu/stage0/bin/rustc /workspace/work/llvm-real-bitcode/sample.rs --crate-name sample --crate-type lib -Ccodegen-units=1 -Copt-level=2 -Cdebuginfo=2 -Clto=off -Cembed-bitcode=no --emit=llvm-bc -o /workspace/work/llvm-real-bitcode/old-opt.bc
++ python3 -
++ /workspace/rust/build/x86_64-unknown-linux-gnu/stage0/bin/rustc /workspace/work/llvm-real-bitcode/sample.rs --crate-name sample --crate-type lib -Ccodegen-units=1 -Copt-level=2 -Cdebuginfo=2 -Clto=off -Cembed-bitcode=no --emit=llvm-bc -Cno-prepopulate-passes -o /workspace/work/llvm-real-bitcode/current-pre.bc
++ /workspace/rust/build/x86_64-unknown-linux-gnu/stage0/bin/rustc /workspace/work/llvm-real-bitcode/sample.rs --crate-name sample --crate-type lib -Ccodegen-units=1 -Copt-level=2 -Cdebuginfo=2 -Clto=off -Cembed-bitcode=no --emit=llvm-bc -o /workspace/work/llvm-real-bitcode/current-opt.bc
++ c++ -std=c++17 -fPIC -fno-rtti -fno-exceptions -UNDEBUG -I/workspace/work/llvm-build/include -I/workspace/rust/src/llvm-project/llvm/include /workspace/work/llvm-real-bitcode/driver.cpp -L/workspace/rust/build/x86_64-unknown-linux-gnu/stage0/lib -l:libLLVM.so.23.1-rust-1.101.0-beta -Wl,-rpath,/workspace/rust/build/x86_64-unknown-linux-gnu/stage0/lib -o /workspace/work/llvm-real-bitcode/driver
++ /workspace/work/llvm-real-bitcode/driver /workspace/work/llvm-real-bitcode/old-pre.bc /workspace/work/llvm-real-bitcode/current-pre.bc /workspace/work/llvm-real-bitcode/old-opt.bc /workspace/work/llvm-real-bitcode/current-opt.bc
+supported=1 files=3 lines=13
+file=/workspace/work/llvm-real-bitcode/sample.rs/@/sample.332c23f23689b670-cgu.0
+file=work/llvm-real-bitcode/sample.rs
+file=library/core/src/num/uint_macros.rs
+supported=1 files=3 lines=13
+file=/workspace/work/llvm-real-bitcode/sample.rs/@/sample.332c23f23689b670-cgu.0
+file=work/llvm-real-bitcode/sample.rs
+file=library/core/src/num/uint_macros.rs
+supported=1 files=3 lines=12
+file=/workspace/work/llvm-real-bitcode/sample.rs/@/sample.332c23f23689b670-cgu.0
+file=work/llvm-real-bitcode/sample.rs
+file=library/core/src/num/uint_macros.rs
+status=0 accepted=1
+clean_bitcode_equal=1

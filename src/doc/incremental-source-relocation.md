@@ -14,7 +14,8 @@ function instantiated in many codegen units (CGUs).
 The source investigation below uses commit
 `5f4effd579500175af844241eb179e756190f1e7` (the checkout reports version 1.102.0).
 Rust 1.100.0 is a requested external baseline, not this checkout's version.
-No performance improvement has yet been measured.
+This design predates the comparative timing runs. Current measurements and their
+attribution limits are recorded in the [validation report](../tools/incremental-relocation-bench/REPORT.md).
 
 The first implementation must be opt-in and fail closed. Unsupported or ambiguous
 cases compile normally. Do not implement this by globally ignoring spans, disabling

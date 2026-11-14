@@ -1,0 +1,41 @@
+{
+  "config": {
+    "bevy": "/workspace/work/bevy-relocation-benchmark",
+    "manifest": "/workspace/work/relocation-consumer/Cargo.toml",
+    "edited_source": "/workspace/work/bevy-relocation-benchmark/crates/bevy_ecs/src/query/state.rs",
+    "cargo": "/workspace/work/toolchains/1.100.0/bin/cargo",
+    "environment": {
+      "CARGO_HOME": "/workspace/work/cargo-home"
+    },
+    "output": "/workspace/work/validation-records/bevy-official-debug0",
+    "jobs": 1,
+    "profiles": [
+      [
+        0,
+        0
+      ]
+    ],
+    "compilers": [
+      {
+        "name": "official-1.100.0",
+        "rustc": "/workspace/work/toolchains/1.100.0/bin/rustc"
+      }
+    ],
+    "generic_marker": "    pub fn matched_tables(&self)",
+    "type_marker": "pub struct QueryState<D:",
+    "bottom_marker": "impl<D: QueryData, F: QueryFilter> From<QueryBuilder<'_, D, F>>",
+    "compensated_end_marker": "    /// Returns the archetypes matched by this query.",
+    "body_replace": [
+      "self.matched_tables.ones().map(TableId::from_usize)",
+      "self.matched_tables.ones().rev().map(TableId::from_usize)"
+    ]
+  },
+  "seed": 1729,
+  "source_sha256": "88281d680d4421b84f08b1abdb0e8e2cb7ce746ab2d1d50334e5f7c2e1c56df4",
+  "cargo_version": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+  "bevy_commit": "5f8270f2e049f90139a503d1e930070d926f9427",
+  "lockfile_sha256": "8ae366fefb7790c3124f99ec3dd9013274abf28e4b49392f045e46d0c7ba3fcd",
+  "compilers": {
+    "official-1.100.0": "rustc 1.100.0 (0ef1bc386 2026-11-09)\nbinary: rustc\ncommit-hash: 0ef1bc386059596dada8fb65b50425aab2ea637a\ncommit-date: 2026-11-09\nhost: x86_64-unknown-linux-gnu\nrelease: 1.100.0\nLLVM version: 23.1.5"
+  }
+}

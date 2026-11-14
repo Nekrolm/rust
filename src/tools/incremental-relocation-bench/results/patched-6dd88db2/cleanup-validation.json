@@ -1,0 +1,192 @@
+{
+  "compiler": "rustc 1.102.0-dev (6dd88db29 2026-11-14)\nbinary: rustc\ncommit-hash: 6dd88db2949b3173124de6f722f362678388e0d8\ncommit-date: 2026-11-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.102.0-dev\nLLVM version: 23.1.5\n",
+  "flags": [
+    "-Clto=off",
+    "-Cembed-bitcode=no",
+    "-Zincremental-source-relocation"
+  ],
+  "performance_measurement": false,
+  "instrumented_stages": [
+    "ui_top",
+    "scene_top",
+    "forced_green_touch"
+  ],
+  "stages": [
+    {
+      "stage": "baseline",
+      "exit_code": 0,
+      "output_sidecar_count": 0,
+      "incremental_manifest_path_count": 441,
+      "instrumented": false,
+      "instrumentation_flags": []
+    },
+    {
+      "stage": "ui_top",
+      "exit_code": 0,
+      "output_sidecar_count": 0,
+      "incremental_manifest_path_count": 441,
+      "instrumented": true,
+      "instrumentation_flags": [
+        "-Zincremental-relocation-report",
+        "-Ztime-passes"
+      ],
+      "relocation": {
+        "report_status": "reported",
+        "cargo_compilation_seen": true,
+        "captured_rustc_invocations": 5,
+        "cargo_report_lines_ignored": 134,
+        "total_cgu_events": 67,
+        "outcomes": {
+          "ordinary_reuse": 55,
+          "fallback": 6,
+          "accepted": 6
+        },
+        "reasons": {
+          "green_post_lto": 55,
+          "semantic_ir_differs": 5,
+          "validated_identical_ir": 6,
+          "debug_rewrite_unsupported": 1
+        },
+        "skipped": {
+          "mir_to_llvm_and_llvm_backend": 55,
+          "none": 6,
+          "llvm_optimization": 6
+        },
+        "eligible_candidates": 6,
+        "supported_dirty_candidates": 12,
+        "candidate_fallbacks": 6,
+        "fallback_fraction_of_supported_candidates": 0.5,
+        "cache_writes": {
+          "carried": 55,
+          "written": 12
+        },
+        "fallback_fraction_of_all_cgus": 0.08955223880597014
+      }
+    },
+    {
+      "stage": "ui_green",
+      "exit_code": 0,
+      "output_sidecar_count": 0,
+      "incremental_manifest_path_count": 441,
+      "instrumented": false,
+      "instrumentation_flags": []
+    },
+    {
+      "stage": "ui_restored",
+      "exit_code": 0,
+      "output_sidecar_count": 0,
+      "incremental_manifest_path_count": 441,
+      "instrumented": false,
+      "instrumentation_flags": []
+    },
+    {
+      "stage": "scene_top",
+      "exit_code": 0,
+      "output_sidecar_count": 0,
+      "incremental_manifest_path_count": 441,
+      "instrumented": true,
+      "instrumentation_flags": [
+        "-Zincremental-relocation-report",
+        "-Ztime-passes"
+      ],
+      "relocation": {
+        "report_status": "reported",
+        "cargo_compilation_seen": true,
+        "captured_rustc_invocations": 7,
+        "cargo_report_lines_ignored": 390,
+        "total_cgu_events": 195,
+        "outcomes": {
+          "ordinary_reuse": 179,
+          "fallback": 3,
+          "accepted": 13
+        },
+        "reasons": {
+          "green_post_lto": 179,
+          "debug_rewrite_unsupported": 1,
+          "validated_identical_ir": 13,
+          "semantic_ir_differs": 2
+        },
+        "skipped": {
+          "mir_to_llvm_and_llvm_backend": 179,
+          "none": 3,
+          "llvm_optimization": 13
+        },
+        "eligible_candidates": 13,
+        "supported_dirty_candidates": 16,
+        "candidate_fallbacks": 3,
+        "fallback_fraction_of_supported_candidates": 0.1875,
+        "cache_writes": {
+          "carried": 179,
+          "written": 16
+        },
+        "fallback_fraction_of_all_cgus": 0.015384615384615385
+      }
+    },
+    {
+      "stage": "scene_green",
+      "exit_code": 0,
+      "output_sidecar_count": 0,
+      "incremental_manifest_path_count": 441,
+      "instrumented": false,
+      "instrumentation_flags": []
+    },
+    {
+      "stage": "scene_restored",
+      "exit_code": 0,
+      "output_sidecar_count": 0,
+      "incremental_manifest_path_count": 441,
+      "instrumented": false,
+      "instrumentation_flags": []
+    },
+    {
+      "stage": "baseline_green",
+      "exit_code": 0,
+      "output_sidecar_count": 0,
+      "incremental_manifest_path_count": 441,
+      "instrumented": false,
+      "instrumentation_flags": []
+    },
+    {
+      "stage": "forced_green_touch",
+      "exit_code": 0,
+      "output_sidecar_count": 0,
+      "incremental_manifest_path_count": 441,
+      "relocation": {
+        "report_status": "reported",
+        "cargo_compilation_seen": true,
+        "captured_rustc_invocations": 7,
+        "cargo_report_lines_ignored": 390,
+        "total_cgu_events": 195,
+        "outcomes": {
+          "ordinary_reuse": 195
+        },
+        "reasons": {
+          "green_post_lto": 195
+        },
+        "skipped": {
+          "mir_to_llvm_and_llvm_backend": 195
+        },
+        "eligible_candidates": 0,
+        "supported_dirty_candidates": 0,
+        "candidate_fallbacks": 0,
+        "fallback_fraction_of_supported_candidates": null,
+        "cache_writes": {
+          "carried": 195
+        },
+        "fallback_fraction_of_all_cgus": 0.0
+      },
+      "instrumented": true,
+      "instrumentation_flags": [
+        "-Zincremental-relocation-report"
+      ]
+    }
+  ],
+  "post_smoke_storage": {
+    "full_target_allocated_bytes_du": 2745049088,
+    "incremental_tree_allocated_bytes_du": 1161904128,
+    "incremental_manifest_path_count": 441,
+    "incremental_manifest_logical_path_sum_bytes": 397642713,
+    "output_sidecar_count": 0,
+    "allocation_note": "Allocated tree sizes deduplicate hard links within each du invocation; logical path sums are not unique extra physical storage."
+  }
+}

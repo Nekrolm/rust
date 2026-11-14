@@ -1,0 +1,55 @@
+{
+  "bevy": "/absolute/path/to/bevy",
+  "manifest": "/absolute/path/to/consumer/Cargo.toml",
+  "edited_source": "/absolute/path/to/bevy/crates/bevy_ecs/src/query/state.rs",
+  "cargo": "/absolute/path/to/cargo-1.100.0/bin/cargo",
+  "environment": {
+    "CARGO_HOME": "/absolute/path/to/cargo-home"
+  },
+  "output": "/absolute/path/to/results/controlled",
+  "jobs": 1,
+  "profiles": [
+    [
+      2,
+      1
+    ],
+    [
+      0,
+      "z"
+    ]
+  ],
+  "compilers": [
+    {
+      "name": "patched-controlled-off",
+      "rustc": "/absolute/path/to/patched/rustc",
+      "flags": [
+        "-Clto=off",
+        "-Cembed-bitcode=no"
+      ],
+      "controlled_experiment": "off",
+      "diagnostic_flags": [
+        "-Zincremental-relocation-report"
+      ]
+    },
+    {
+      "name": "patched-controlled-on",
+      "rustc": "/absolute/path/to/patched/rustc",
+      "flags": [
+        "-Clto=off",
+        "-Cembed-bitcode=no"
+      ],
+      "controlled_experiment": "on",
+      "diagnostic_flags": [
+        "-Zincremental-relocation-report"
+      ]
+    }
+  ],
+  "generic_marker": "    pub fn iter<'w, 's>(&'s mut self, world: &'w World)",
+  "type_marker": "pub struct QueryState<D:",
+  "bottom_marker": "impl<D: QueryData, F: QueryFilter> From<QueryBuilder<'_, D, F>>",
+  "compensated_end_marker": "    /// Returns an [`Iterator`] over the query results for the given [`World`].\n    ///\n    /// This iterator is always guaranteed",
+  "body_replace": [
+    "self.query(world).into_iter()",
+    "self.query_manual(world).into_iter()"
+  ]
+}

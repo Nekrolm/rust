@@ -1,0 +1,1429 @@
+{
+  "workload": "Headless Bevy v0.18.0 ECS consumer",
+  "bevy_revision": "5f8270f2e049f90139a503d1e930070d926f9427",
+  "lockfile_sha256": "8ae366fefb7790c3124f99ec3dd9013274abf28e4b49392f045e46d0c7ba3fcd",
+  "cargo_version": "cargo 1.100.0 (3acc79c0c 2026-11-05)",
+  "harness_sha256": "0c08c529eceb7a306766fd3195bd0fc4037386e339b7ba02090c51e26d673f19",
+  "capture_wrapper_sha256": "b396bd1720a89fdda143267aa26ff3e418aec4b8112b32fc59d346479abe929d",
+  "profiles": [
+    [
+      2,
+      1
+    ]
+  ],
+  "cargo_jobs": 1,
+  "codegen_units": 16,
+  "seed": 1729,
+  "compilers": [
+    {
+      "name": "official-1.100.0",
+      "identity": "rustc 1.100.0 (0ef1bc386 2026-11-09)\nbinary: rustc\ncommit-hash: 0ef1bc386059596dada8fb65b50425aab2ea637a\ncommit-date: 2026-11-09\nhost: x86_64-unknown-linux-gnu\nrelease: 1.100.0\nLLVM version: 23.1.5",
+      "cargo_visible_flags": [
+        "-Clto=off",
+        "-Cembed-bitcode=no"
+      ],
+      "controlled_experiment": null,
+      "streaming_capture_wrapper": true
+    },
+    {
+      "name": "unpatched-0fd799",
+      "identity": "rustc 1.102.0-dev (0fd799ac1 2026-11-14)\nbinary: rustc\ncommit-hash: 0fd799ac1b46c54286261630672e1150f04d3649\ncommit-date: 2026-11-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.102.0-dev\nLLVM version: 23.1.5",
+      "cargo_visible_flags": [
+        "-Clto=off",
+        "-Cembed-bitcode=no"
+      ],
+      "controlled_experiment": null,
+      "streaming_capture_wrapper": true
+    },
+    {
+      "name": "patched-controlled-off-6dd88db2",
+      "identity": "rustc 1.102.0-dev (6dd88db29 2026-11-14)\nbinary: rustc\ncommit-hash: 6dd88db2949b3173124de6f722f362678388e0d8\ncommit-date: 2026-11-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.102.0-dev\nLLVM version: 23.1.5",
+      "cargo_visible_flags": [
+        "-Clto=off",
+        "-Cembed-bitcode=no"
+      ],
+      "controlled_experiment": "off",
+      "streaming_capture_wrapper": true
+    },
+    {
+      "name": "patched-controlled-on-6dd88db2",
+      "identity": "rustc 1.102.0-dev (6dd88db29 2026-11-14)\nbinary: rustc\ncommit-hash: 6dd88db2949b3173124de6f722f362678388e0d8\ncommit-date: 2026-11-14\nhost: x86_64-unknown-linux-gnu\nrelease: 1.102.0-dev\nLLVM version: 23.1.5",
+      "cargo_visible_flags": [
+        "-Clto=off",
+        "-Cembed-bitcode=no"
+      ],
+      "controlled_experiment": "on",
+      "streaming_capture_wrapper": true
+    }
+  ],
+  "successful_samples": 60,
+  "successful_samples_per_cell": 5,
+  "raw_samples": [
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 4,
+      "wall_seconds": 5.734508740999445,
+      "exit_code": 0,
+      "peak_rss_kib": 678780,
+      "artifact_bytes": 95288340
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 0,
+      "wall_seconds": 5.240496188998804,
+      "exit_code": 0,
+      "peak_rss_kib": 674224,
+      "artifact_bytes": 95288340
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 2,
+      "wall_seconds": 0.04692264800542034,
+      "exit_code": 0,
+      "peak_rss_kib": 38028,
+      "artifact_bytes": 105693288
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 4,
+      "wall_seconds": 4.419256895002036,
+      "exit_code": 0,
+      "peak_rss_kib": 623652,
+      "artifact_bytes": 95288372
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 2,
+      "wall_seconds": 0.05183724699600134,
+      "exit_code": 0,
+      "peak_rss_kib": 38420,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 0,
+      "wall_seconds": 3.69461265100108,
+      "exit_code": 0,
+      "peak_rss_kib": 642016,
+      "artifact_bytes": 105693328
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 3,
+      "wall_seconds": 4.255943559001025,
+      "exit_code": 0,
+      "peak_rss_kib": 622212,
+      "artifact_bytes": 95288372
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 3,
+      "wall_seconds": 4.2075354420012445,
+      "exit_code": 0,
+      "peak_rss_kib": 684588,
+      "artifact_bytes": 105693288
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 3,
+      "wall_seconds": 0.06546143000014126,
+      "exit_code": 0,
+      "peak_rss_kib": 38636,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 0,
+      "wall_seconds": 4.368830432002142,
+      "exit_code": 0,
+      "peak_rss_kib": 681304,
+      "artifact_bytes": 105693288
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 1,
+      "wall_seconds": 4.376577943003213,
+      "exit_code": 0,
+      "peak_rss_kib": 624076,
+      "artifact_bytes": 95288372
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 4,
+      "wall_seconds": 5.451023444999009,
+      "exit_code": 0,
+      "peak_rss_kib": 710508,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 1,
+      "wall_seconds": 4.325112472004548,
+      "exit_code": 0,
+      "peak_rss_kib": 686356,
+      "artifact_bytes": 105693288
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 0,
+      "wall_seconds": 6.236530262998713,
+      "exit_code": 0,
+      "peak_rss_kib": 704424,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 0,
+      "wall_seconds": 5.766397302999394,
+      "exit_code": 0,
+      "peak_rss_kib": 685520,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 1,
+      "wall_seconds": 0.057222663999709766,
+      "exit_code": 0,
+      "peak_rss_kib": 38580,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 4,
+      "wall_seconds": 0.33991133000381524,
+      "exit_code": 0,
+      "peak_rss_kib": 37732,
+      "artifact_bytes": 105693288
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 1,
+      "wall_seconds": 3.4268496190052247,
+      "exit_code": 0,
+      "peak_rss_kib": 643276,
+      "artifact_bytes": 105693328
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 4,
+      "wall_seconds": 4.663229886995396,
+      "exit_code": 0,
+      "peak_rss_kib": 634056,
+      "artifact_bytes": 95288326
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 4,
+      "wall_seconds": 0.05378734799887752,
+      "exit_code": 0,
+      "peak_rss_kib": 38032,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 3,
+      "wall_seconds": 3.451415243995143,
+      "exit_code": 0,
+      "peak_rss_kib": 640728,
+      "artifact_bytes": 105693328
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 2,
+      "wall_seconds": 5.396028392999142,
+      "exit_code": 0,
+      "peak_rss_kib": 687012,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 2,
+      "wall_seconds": 4.111103244998958,
+      "exit_code": 0,
+      "peak_rss_kib": 682280,
+      "artifact_bytes": 105693288
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 1,
+      "wall_seconds": 0.05367789499723585,
+      "exit_code": 0,
+      "peak_rss_kib": 38296,
+      "artifact_bytes": 105693288
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 1,
+      "wall_seconds": 5.073603293996712,
+      "exit_code": 0,
+      "peak_rss_kib": 674660,
+      "artifact_bytes": 95288340
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 4,
+      "wall_seconds": 4.357017415997689,
+      "exit_code": 0,
+      "peak_rss_kib": 686656,
+      "artifact_bytes": 105693288
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 1,
+      "wall_seconds": 6.144129004002025,
+      "exit_code": 0,
+      "peak_rss_kib": 703056,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 2,
+      "wall_seconds": 4.439063096004247,
+      "exit_code": 0,
+      "peak_rss_kib": 632880,
+      "artifact_bytes": 95288326
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 3,
+      "wall_seconds": 6.257236561999889,
+      "exit_code": 0,
+      "peak_rss_kib": 712108,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 0,
+      "wall_seconds": 0.055851040000561625,
+      "exit_code": 0,
+      "peak_rss_kib": 37992,
+      "artifact_bytes": 95288340
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 3,
+      "wall_seconds": 4.184381047001807,
+      "exit_code": 0,
+      "peak_rss_kib": 630668,
+      "artifact_bytes": 95288326
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 4,
+      "wall_seconds": 0.24228272400068818,
+      "exit_code": 0,
+      "peak_rss_kib": 38580,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 3,
+      "wall_seconds": 0.05208667699480429,
+      "exit_code": 0,
+      "peak_rss_kib": 38440,
+      "artifact_bytes": 95288340
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 1,
+      "wall_seconds": 0.05378705800103489,
+      "exit_code": 0,
+      "peak_rss_kib": 38404,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 3,
+      "wall_seconds": 0.05332537699723616,
+      "exit_code": 0,
+      "peak_rss_kib": 38432,
+      "artifact_bytes": 105693288
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 4,
+      "wall_seconds": 4.692188136003097,
+      "exit_code": 0,
+      "peak_rss_kib": 636356,
+      "artifact_bytes": 95288326
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 1,
+      "wall_seconds": 4.1974350870004855,
+      "exit_code": 0,
+      "peak_rss_kib": 630736,
+      "artifact_bytes": 95288326
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 2,
+      "wall_seconds": 0.048570496001048014,
+      "exit_code": 0,
+      "peak_rss_kib": 38416,
+      "artifact_bytes": 95288340
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 3,
+      "wall_seconds": 4.799685618003423,
+      "exit_code": 0,
+      "peak_rss_kib": 634852,
+      "artifact_bytes": 95288326
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 4,
+      "wall_seconds": 5.399308494001161,
+      "exit_code": 0,
+      "peak_rss_kib": 687260,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 3,
+      "wall_seconds": 0.0527913499972783,
+      "exit_code": 0,
+      "peak_rss_kib": 38040,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 0,
+      "wall_seconds": 0.0483238010056084,
+      "exit_code": 0,
+      "peak_rss_kib": 38184,
+      "artifact_bytes": 105693288
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 2,
+      "wall_seconds": 6.599690993003605,
+      "exit_code": 0,
+      "peak_rss_kib": 705504,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 2,
+      "wall_seconds": 4.781932244004565,
+      "exit_code": 0,
+      "peak_rss_kib": 630380,
+      "artifact_bytes": 95288326
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 0,
+      "wall_seconds": 4.662921438997728,
+      "exit_code": 0,
+      "peak_rss_kib": 627000,
+      "artifact_bytes": 95288372
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 1,
+      "wall_seconds": 0.05499866699392442,
+      "exit_code": 0,
+      "peak_rss_kib": 38408,
+      "artifact_bytes": 95288340
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 4,
+      "wall_seconds": 0.0474297580003622,
+      "exit_code": 0,
+      "peak_rss_kib": 38436,
+      "artifact_bytes": 95288340
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 1,
+      "wall_seconds": 4.942508653002733,
+      "exit_code": 0,
+      "peak_rss_kib": 630940,
+      "artifact_bytes": 95288326
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 2,
+      "wall_seconds": 4.7716141549972235,
+      "exit_code": 0,
+      "peak_rss_kib": 625204,
+      "artifact_bytes": 95288372
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 1,
+      "wall_seconds": 5.0642628310015425,
+      "exit_code": 0,
+      "peak_rss_kib": 693052,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 0,
+      "wall_seconds": 5.430923927000549,
+      "exit_code": 0,
+      "peak_rss_kib": 631976,
+      "artifact_bytes": 95288326
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 0,
+      "wall_seconds": 0.052550606000295375,
+      "exit_code": 0,
+      "peak_rss_kib": 38556,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 3,
+      "wall_seconds": 5.48698447499919,
+      "exit_code": 0,
+      "peak_rss_kib": 679996,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 0,
+      "wall_seconds": 4.8628990030047134,
+      "exit_code": 0,
+      "peak_rss_kib": 631336,
+      "artifact_bytes": 95288326
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 2,
+      "wall_seconds": 5.2011399820039514,
+      "exit_code": 0,
+      "peak_rss_kib": 679644,
+      "artifact_bytes": 95288340
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 2,
+      "wall_seconds": 3.9302731369971298,
+      "exit_code": 0,
+      "peak_rss_kib": 642376,
+      "artifact_bytes": 105693328
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 2,
+      "wall_seconds": 0.056877784998505376,
+      "exit_code": 0,
+      "peak_rss_kib": 38368,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "repeat": 0,
+      "wall_seconds": 0.0535331440041773,
+      "exit_code": 0,
+      "peak_rss_kib": 38580,
+      "artifact_bytes": 95288286
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "repeat": 4,
+      "wall_seconds": 3.5446653320032055,
+      "exit_code": 0,
+      "peak_rss_kib": 640536,
+      "artifact_bytes": 105693328
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "repeat": 3,
+      "wall_seconds": 5.725414794003882,
+      "exit_code": 0,
+      "peak_rss_kib": 668132,
+      "artifact_bytes": 95288340
+    }
+  ],
+  "summary": [
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "n": 5,
+      "median_seconds": 3.5446653320032055,
+      "min_seconds": 3.4268496190052247,
+      "max_seconds": 3.9302731369971298,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "n": 5,
+      "median_seconds": 0.05332537699723616,
+      "min_seconds": 0.04692264800542034,
+      "max_seconds": 0.33991133000381524,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "official-1.100.0",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "n": 5,
+      "median_seconds": 4.325112472004548,
+      "min_seconds": 4.111103244998958,
+      "max_seconds": 4.368830432002142,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "n": 5,
+      "median_seconds": 4.439063096004247,
+      "min_seconds": 4.184381047001807,
+      "max_seconds": 4.8628990030047134,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "n": 5,
+      "median_seconds": 0.05378734799887752,
+      "min_seconds": 0.0535331440041773,
+      "max_seconds": 0.06546143000014126,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-off-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "n": 5,
+      "median_seconds": 5.399308494001161,
+      "min_seconds": 5.0642628310015425,
+      "max_seconds": 5.766397302999394,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "n": 5,
+      "median_seconds": 4.799685618003423,
+      "min_seconds": 4.663229886995396,
+      "max_seconds": 5.430923927000549,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "n": 5,
+      "median_seconds": 0.0527913499972783,
+      "min_seconds": 0.05183724699600134,
+      "max_seconds": 0.24228272400068818,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "n": 5,
+      "median_seconds": 6.236530262998713,
+      "min_seconds": 5.451023444999009,
+      "max_seconds": 6.599690993003605,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "n": 5,
+      "median_seconds": 4.419256895002036,
+      "min_seconds": 4.255943559001025,
+      "max_seconds": 4.7716141549972235,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "n": 5,
+      "median_seconds": 0.05208667699480429,
+      "min_seconds": 0.0474297580003622,
+      "max_seconds": 0.055851040000561625,
+      "sufficient_repeated_samples": true
+    },
+    {
+      "compiler": "unpatched-0fd799",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "n": 5,
+      "median_seconds": 5.240496188998804,
+      "min_seconds": 5.073603293996712,
+      "max_seconds": 5.734508740999445,
+      "sufficient_repeated_samples": true
+    }
+  ],
+  "identity_audit": {
+    "same_compiler_path": true,
+    "matching_crate_metadata": true,
+    "separate_incremental_paths": true,
+    "mode_flags_verified": true,
+    "report_and_time_passes_absent": true,
+    "compiled_unit_identity_count_per_mode": 59,
+    "identities": [
+      {
+        "crate": "async_task",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=356f8e4935367cc5",
+          "extra-filename=-a062cf073a5f3bb7"
+        ]
+      },
+      {
+        "crate": "atomic_waker",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=64707df06d62730e",
+          "extra-filename=-4128ad71b783feec"
+        ]
+      },
+      {
+        "crate": "bevy_ecs",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=a472f4b78fd2604f",
+          "extra-filename=-bb95157f3474e4bc"
+        ]
+      },
+      {
+        "crate": "bevy_ecs_macros",
+        "kind": "proc-macro",
+        "metadata_tokens": [
+          "metadata=4b7cd13edef29d62",
+          "extra-filename=-114f9c8a4efb958b"
+        ]
+      },
+      {
+        "crate": "bevy_macro_utils",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=54bc1c116ff4b742",
+          "extra-filename=-182db3f441c01f88"
+        ]
+      },
+      {
+        "crate": "bevy_platform",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=797fba36ac272cec",
+          "extra-filename=-decbcf1087fa2a35"
+        ]
+      },
+      {
+        "crate": "bevy_ptr",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=2e82a0cfe818be20",
+          "extra-filename=-9241c1a40b757562"
+        ]
+      },
+      {
+        "crate": "bevy_tasks",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=8f1f5c01d93b49b0",
+          "extra-filename=-af0cc7e9cac49053"
+        ]
+      },
+      {
+        "crate": "bevy_utils",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=44b30747f04e5340",
+          "extra-filename=-792ba688a9094081"
+        ]
+      },
+      {
+        "crate": "bitflags",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=c03a2d5585336691",
+          "extra-filename=-e18dc9bfe2570d09"
+        ]
+      },
+      {
+        "crate": "build_script_build",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=1d78910a47af1570"
+        ]
+      },
+      {
+        "crate": "build_script_build",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=58791ee39252767f"
+        ]
+      },
+      {
+        "crate": "build_script_build",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=7a69b4fe6eca150a"
+        ]
+      },
+      {
+        "crate": "build_script_build",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=c520ee03a8aeebb2"
+        ]
+      },
+      {
+        "crate": "build_script_build",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=e533f82452b3049c"
+        ]
+      },
+      {
+        "crate": "bumpalo",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=a4fc4ee2b5508b1a",
+          "extra-filename=-24e81e28828b92fb"
+        ]
+      },
+      {
+        "crate": "cfg_if",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=adbdc2ce48a9c317",
+          "extra-filename=-6a523acd5934c02b"
+        ]
+      },
+      {
+        "crate": "concurrent_queue",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=2273b96aed3bfdcb",
+          "extra-filename=-62050a59199f49bc"
+        ]
+      },
+      {
+        "crate": "convert_case",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=cb2534ba6a894e09",
+          "extra-filename=-db8c433f11eb6145"
+        ]
+      },
+      {
+        "crate": "crossbeam_queue",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=8e19b0914ca0a797",
+          "extra-filename=-37719eff1ba825f0"
+        ]
+      },
+      {
+        "crate": "crossbeam_utils",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=bbf25f95cbc252a0",
+          "extra-filename=-ec3088f3f05c9b58"
+        ]
+      },
+      {
+        "crate": "derive_more",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=05b32ed386a04912",
+          "extra-filename=-4c4563b772c177f2"
+        ]
+      },
+      {
+        "crate": "derive_more_impl",
+        "kind": "proc-macro",
+        "metadata_tokens": [
+          "metadata=b72f32a10edc5c9b",
+          "extra-filename=-3e87660abfc88d8c"
+        ]
+      },
+      {
+        "crate": "disqualified",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=58ff613a6e911003",
+          "extra-filename=-dded30d092a342a8"
+        ]
+      },
+      {
+        "crate": "equivalent",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=05b498fe2728469d",
+          "extra-filename=-0c7bfc65519df63a"
+        ]
+      },
+      {
+        "crate": "equivalent",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=9d0a616441705a20",
+          "extra-filename=-0021732e432bc475"
+        ]
+      },
+      {
+        "crate": "fixedbitset",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=5a699810a6ae8dfd",
+          "extra-filename=-13436ba8d4e5f3f2"
+        ]
+      },
+      {
+        "crate": "foldhash",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=b22e8100ca9ba73a",
+          "extra-filename=-eeee4f38e368fa4a"
+        ]
+      },
+      {
+        "crate": "futures_core",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=cc170431422e5d6b",
+          "extra-filename=-44d8e7bbb523c4c8"
+        ]
+      },
+      {
+        "crate": "futures_lite",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=f4b2ce06225cda30",
+          "extra-filename=-4dcde6914ff836d3"
+        ]
+      },
+      {
+        "crate": "hashbrown",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=5efab9d2dc5fa545",
+          "extra-filename=-c7f5e539ab751f52"
+        ]
+      },
+      {
+        "crate": "hashbrown",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=a91956a55c88e866",
+          "extra-filename=-7fc7598fef225df9"
+        ]
+      },
+      {
+        "crate": "hashbrown",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=f884a70ac5c406f3",
+          "extra-filename=-d3b8e5e74a870615"
+        ]
+      },
+      {
+        "crate": "indexmap",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=426b6f733da31678",
+          "extra-filename=-28ad859373c8b0c0"
+        ]
+      },
+      {
+        "crate": "indexmap",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=d8c7b81a14cc6323",
+          "extra-filename=-f727a3613fec9f22"
+        ]
+      },
+      {
+        "crate": "log",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=37a4867c9935b250",
+          "extra-filename=-a3ccdc588362892d"
+        ]
+      },
+      {
+        "crate": "nonmax",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=dc01c8eb5578ca92",
+          "extra-filename=-55c9fa45a6550c97"
+        ]
+      },
+      {
+        "crate": "pin_project_lite",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=51c718878a88c614",
+          "extra-filename=-44c11ffb2dacdee6"
+        ]
+      },
+      {
+        "crate": "proc_macro2",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=ebb76c2c5d66aaaa",
+          "extra-filename=-fb84372088bf0868"
+        ]
+      },
+      {
+        "crate": "quote",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=31f345e55f9144e5",
+          "extra-filename=-564db8c65ff738f1"
+        ]
+      },
+      {
+        "crate": "relocation_bevy_ecs_consumer",
+        "kind": "bin",
+        "metadata_tokens": [
+          "metadata=5c14eb612b8736ad"
+        ]
+      },
+      {
+        "crate": "slotmap",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=9c8605ca97270fd4",
+          "extra-filename=-eafd6eb79a05b4b7"
+        ]
+      },
+      {
+        "crate": "smallvec",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=98ecd0eca03b4b0d",
+          "extra-filename=-fc18e0180b8d1510"
+        ]
+      },
+      {
+        "crate": "spin",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=57aac0ebcdbe99e0",
+          "extra-filename=-690ebf1639adf3e5"
+        ]
+      },
+      {
+        "crate": "syn",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=21577114018ee814",
+          "extra-filename=-05942e9b3af9034b"
+        ]
+      },
+      {
+        "crate": "syn",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=5e6aa633f3749d2d",
+          "extra-filename=-4332f463dc86c29d"
+        ]
+      },
+      {
+        "crate": "thiserror",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=96b6930dae27afa5",
+          "extra-filename=-57b1cc688c222f91"
+        ]
+      },
+      {
+        "crate": "thiserror_impl",
+        "kind": "proc-macro",
+        "metadata_tokens": [
+          "metadata=4018426c0792362a",
+          "extra-filename=-7ed9784e333ccca6"
+        ]
+      },
+      {
+        "crate": "thread_local",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=8b6c90f03b0fa52c",
+          "extra-filename=-ce46376685c0e5a5"
+        ]
+      },
+      {
+        "crate": "toml_datetime",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=291b064beab088f1",
+          "extra-filename=-8bf822c3c9789d35"
+        ]
+      },
+      {
+        "crate": "toml_edit",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=6c3e34695faa5029",
+          "extra-filename=-2709550d36e05038"
+        ]
+      },
+      {
+        "crate": "toml_parser",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=eeda1f1e8b5d7c9d",
+          "extra-filename=-e52d3635f3f268b7"
+        ]
+      },
+      {
+        "crate": "unicode_ident",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=73af0c0d224f6a2b",
+          "extra-filename=-4b7f042afac2b1ea"
+        ]
+      },
+      {
+        "crate": "unicode_segmentation",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=208e6a5a06cff057",
+          "extra-filename=-956f7355dc2f3ad5"
+        ]
+      },
+      {
+        "crate": "unicode_xid",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=b4ce744b6bb67452",
+          "extra-filename=-239d76296fc9e56b"
+        ]
+      },
+      {
+        "crate": "variadics_please",
+        "kind": "proc-macro",
+        "metadata_tokens": [
+          "metadata=d952b1e8172312d7",
+          "extra-filename=-df9e2b150a144915"
+        ]
+      },
+      {
+        "crate": "version_check",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=b2fbf0cee88f84b6",
+          "extra-filename=-8b6c871dcb1a07a2"
+        ]
+      },
+      {
+        "crate": "winnow",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=52f8a7fe9622ccd8",
+          "extra-filename=-c134e53fe8feca97"
+        ]
+      },
+      {
+        "crate": "winnow",
+        "kind": "lib",
+        "metadata_tokens": [
+          "metadata=673c9b76eb05b732",
+          "extra-filename=-eb3e030605c472ef"
+        ]
+      }
+    ]
+  },
+  "untimed_diagnostic_samples_per_case": 1,
+  "diagnostics": [
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "top",
+      "exit_code": 0,
+      "relocation": {
+        "report_status": "reported",
+        "cargo_compilation_seen": true,
+        "captured_rustc_invocations": 2,
+        "cargo_report_lines_ignored": 64,
+        "total_cgu_events": 32,
+        "outcomes": {
+          "ordinary_reuse": 28,
+          "fallback": 4
+        },
+        "reasons": {
+          "green_post_lto": 28,
+          "debug_rewrite_unsupported": 4
+        },
+        "skipped": {
+          "mir_to_llvm_and_llvm_backend": 28,
+          "none": 4
+        },
+        "eligible_candidates": 0,
+        "supported_dirty_candidates": 4,
+        "candidate_fallbacks": 4,
+        "fallback_fraction_of_supported_candidates": 1.0,
+        "cache_writes": {
+          "carried": 28,
+          "written": 4
+        },
+        "fallback_fraction_of_all_cgus": 0.125
+      }
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "noop",
+      "exit_code": 0,
+      "relocation": {
+        "report_status": "no_rustc_invocation",
+        "cargo_compilation_seen": false,
+        "captured_rustc_invocations": 0,
+        "cargo_report_lines_ignored": 64,
+        "total_cgu_events": 0,
+        "outcomes": {},
+        "reasons": {},
+        "skipped": {},
+        "eligible_candidates": null,
+        "supported_dirty_candidates": null,
+        "candidate_fallbacks": null,
+        "fallback_fraction_of_supported_candidates": null,
+        "cache_writes": {},
+        "fallback_fraction_of_all_cgus": null
+      }
+    },
+    {
+      "compiler": "patched-controlled-on-6dd88db2",
+      "debug": 2,
+      "opt": 1,
+      "case": "body",
+      "exit_code": 0,
+      "relocation": {
+        "report_status": "reported",
+        "cargo_compilation_seen": true,
+        "captured_rustc_invocations": 2,
+        "cargo_report_lines_ignored": 64,
+        "total_cgu_events": 32,
+        "outcomes": {
+          "ordinary_reuse": 30,
+          "fallback": 2
+        },
+        "reasons": {
+          "green_post_lto": 30,
+          "debug_rewrite_unsupported": 2
+        },
+        "skipped": {
+          "mir_to_llvm_and_llvm_backend": 30,
+          "none": 2
+        },
+        "eligible_candidates": 0,
+        "supported_dirty_candidates": 2,
+        "candidate_fallbacks": 2,
+        "fallback_fraction_of_supported_candidates": 1.0,
+        "cache_writes": {
+          "carried": 30,
+          "written": 2
+        },
+        "fallback_fraction_of_all_cgus": 0.0625
+      }
+    }
+  ]
+}
