@@ -302,6 +302,11 @@ refreshes a temporary optimized module. Success skips LLVM optimization; MIR to
 LLVM lowering, object emission, and linking still run. There is no object-section
 patching and no speedup claim before a built compiler executes the tests.
 
+Build the experimental compiler with `--set rust.omit-git-hash=false` so that
+`rustc -Vv` reports its complete commit hash. Missing, unknown, empty, truncated,
+or malformed compiler hashes cause `unsupported_compiler_identity` fallback;
+compiler versions alone do not authorize cache reuse across development builds.
+
 The initial configuration requires `-Clto=off -Cembed-bitcode=no`, ordinary object
 or linked output, and no split debug information, save-temps, profiling, coverage,
 sanitizers, extra passes, plugins, autodiff, or offload. The helper further rejects
@@ -329,7 +334,8 @@ is established only on acceptance. Ordinary green reuse has a separate outcome.
 Non-LLVM backends report `unsupported_backend` for dirty CGUs in the shared
 scheduler. Alternative backends with independent schedulers may emit no events.
 
-Fallback reasons include `disabled`, `unsupported_lto`, `unsupported_split_debug`,
+Fallback reasons include `disabled`, `unsupported_compiler_identity`,
+`unsupported_lto`, `unsupported_split_debug`,
 `unsupported_output`, `unsupported_instrumentation`, `no_prior_manifest`,
 `malformed_manifest`, `manifest_oversize`, `manifest_io_failure`, `manifest_binding_mismatch`, `semantic_ir_differs`,
 `source_mapping_unsupported`, `debug_rewrite_unsupported`, and `malformed_bitcode`.

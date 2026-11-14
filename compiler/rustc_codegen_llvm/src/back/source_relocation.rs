@@ -47,6 +47,9 @@ fn unsupported(cgcx: &CodegenContext, config: &ModuleConfig) -> Option<&'static 
     if !cgcx.source_relocation {
         return Some("disabled");
     }
+    if cgcx.relocation_compiler.is_empty() {
+        return Some("unsupported_compiler_identity");
+    }
     if cgcx.lto != Lto::No || cgcx.use_linker_plugin_lto {
         return Some("unsupported_lto");
     }

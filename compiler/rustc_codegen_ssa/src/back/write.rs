@@ -1327,12 +1327,11 @@ fn start_executing_work<B: WriteBackendMethods>(
             .incr_comp_session
             .and_then(|session| session.borrow().old_session_directory.clone()),
         relocation_compiler: if sess.opts.unstable_opts.incremental_source_relocation {
-            format!(
-                "relocation-v1:{}:{}",
+            super::source_relocation::compiler_cache_identity(
                 sess.cfg_version,
-                option_env!("CFG_VER_HASH").unwrap_or("unknown")
+                option_env!("CFG_VER_HASH"),
             )
-            .into_bytes()
+            .unwrap_or_default()
         } else {
             Vec::new()
         },
