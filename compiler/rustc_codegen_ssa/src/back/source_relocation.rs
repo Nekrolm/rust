@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 const MAGIC: &[u8; 8] = b"RSRLOC\0\x01";
 const CHECKSUM_SIZE: usize = 16;
-const MAX_MANIFEST_SIZE: usize = 256 * 1024 * 1024;
+pub const MAX_MANIFEST_SIZE: usize = 256 * 1024 * 1024;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct CacheBinding {
