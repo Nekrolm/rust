@@ -23,6 +23,7 @@ enum RelocationStatus : uint32_t {
   UnsupportedMapping = 2,
   UnsupportedDebug = 3,
   MalformedModule = 4,
+  IdenticalIRSuccess = 5,
 };
 
 static SmallVector<char, 0> serialize(Module &M) {
@@ -84,6 +85,7 @@ struct DebugGraph {
   SmallVector<DIFile *, 64> LineFiles;
   SmallVector<DIFile *, 4> Files;
   bool Supported = true;
+  bool HasDebug = false;
 
   void visit(Metadata *MD) {
     if (!MD || !Seen.insert(MD).second)
@@ -98,6 +100,8 @@ struct DebugGraph {
     if (!N)
       return;
     Nodes.push_back(N);
+    if (!isa<MDTuple>(N))
+      HasDebug = true;
     size_t PriorLines = Lines.size();
     if (auto *L = dyn_cast<DILocation>(N))
       Lines.push_back(L->getLine());
@@ -140,6 +144,8 @@ struct DebugGraph {
 
   explicit DebugGraph(Module &M) {
     for (auto &N : M.named_metadata()) {
+      if (N.getName().starts_with("llvm.dbg."))
+        HasDebug = true;
       if (N.getName().starts_with("llvm.dbg.") && N.getName() != "llvm.dbg.cu")
         Supported = false;
       for (MDNode *O : N.operands())
@@ -148,6 +154,8 @@ struct DebugGraph {
     for (GlobalVariable &G : M.globals())
       attachments(G);
     for (Function &F : M) {
+      if (F.getName().starts_with("llvm.dbg."))
+        HasDebug = true;
       attachments(F);
       for (BasicBlock &B : F)
         if (B.getTrailingDbgRecords())
@@ -161,6 +169,7 @@ struct DebugGraph {
           if (auto *V = dyn_cast<MetadataAsValue>(O.get()))
             visit(V->getMetadata());
         for (DbgRecord &R : I.getDbgRecordRange()) {
+          HasDebug = true;
           visit(R.getDebugLoc().get());
           if (auto *V = dyn_cast<DbgVariableRecord>(&R)) {
             visit(V->getVariable());
@@ -290,13 +299,14 @@ extern "C" LLVMModuleRef LLVMRustRelocationRefreshDebugInfo(
   if (!OG.Supported || !CG.Supported || !PG.Supported)
     return nullptr;
   *Status = SemanticDifference;
-  if (!sameSemantics(*Old, Current))
-    return nullptr;
-  if (OG.Files.empty() && CG.Files.empty() && PG.Files.empty() &&
-      OG.Lines.empty() && CG.Lines.empty() && PG.Lines.empty()) {
-    *Status = Success;
+  if (!OG.HasDebug && !CG.HasDebug && !PG.HasDebug) {
+    if (serialize(*Old) != serialize(Current))
+      return nullptr;
+    *Status = IdenticalIRSuccess;
     return wrap(Optimized.release());
   }
+  if (!sameSemantics(*Old, Current))
+    return nullptr;
   *Status = UnsupportedMapping;
   if (OG.Files.size() != CG.Files.size() || OG.Lines.size() != CG.Lines.size() ||
       OG.Lines.empty())
