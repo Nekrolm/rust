@@ -632,6 +632,12 @@ pub fn produce_final_output_artifacts(
             needs_crate_object || (user_wants_objects && sess.codegen_units().as_usize() > 1);
 
         for module in compiled_modules.modules.iter() {
+            if sess.opts.unstable_opts.incremental_source_relocation
+                && let Some(ref path) = module.object
+            {
+                ensure_removed(sess.dcx(), &path.with_extension("relocation"));
+            }
+
             if !keep_numbered_objects {
                 if let Some(ref path) = module.object {
                     ensure_removed(sess.dcx(), path);

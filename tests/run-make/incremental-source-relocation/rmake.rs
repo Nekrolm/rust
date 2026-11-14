@@ -7,7 +7,7 @@ use run_make_support::{cmd, rfs, run, rustc};
 const SOURCE: &str = "#![no_std]\n#[unsafe(no_mangle)]\n#[inline(never)]\npub extern \"C\" fn answer(x: u64) -> u64 { x.wrapping_mul(3) }\n";
 
 fn build(incremental: &str, extra: &[&str]) -> String {
-    rustc()
+    let report = rustc()
         .input("sample.rs")
         .crate_type("lib")
         .emit("obj")
@@ -22,7 +22,31 @@ fn build(incremental: &str, extra: &[&str]) -> String {
         .incremental(incremental)
         .args(extra)
         .run()
-        .stderr_utf8()
+        .stderr_utf8();
+    assert_no_output_manifests();
+    report
+}
+
+fn assert_no_output_manifests() {
+    for entry in rfs::read_dir(".") {
+        let path = entry.unwrap().path();
+        assert!(
+            !path.extension().is_some_and(|extension| extension == "relocation"),
+            "temporary relocation manifest remains: {}",
+            path.display(),
+        );
+    }
+}
+
+fn has_cached_manifest(directory: &std::path::Path) -> bool {
+    rfs::read_dir(directory).any(|entry| {
+        let path = entry.unwrap().path();
+        if path.is_dir() {
+            has_cached_manifest(&path)
+        } else {
+            path.extension().is_some_and(|extension| extension == "relocation")
+        }
+    })
 }
 
 fn debug_info() -> String {
@@ -36,6 +60,7 @@ fn assert_reason(report: &str, reason: &str) {
 fn main() {
     rfs::write("sample.rs", SOURCE);
     assert_reason(&build("incremental", &[]), "no_prior_manifest");
+    assert!(has_cached_manifest(std::path::Path::new("incremental")));
     assert_reason(&build("incremental", &[]), "green_post_lto");
     assert!(build("incremental", &["-Zincremental-relocation-report=no"]).is_empty());
     assert_reason(&build("incremental", &[]), "green_post_lto");
@@ -119,6 +144,15 @@ fn main() {
     rfs::write("sample.rs", format!("\n{SOURCE}"));
     assert_reason(&build("oversize", &[]), "manifest_oversize");
 
+    rfs::write("sample.rs", SOURCE);
+    assert_reason(&build("linked", &["--emit=link"]), "no_prior_manifest");
+    assert!(has_cached_manifest(std::path::Path::new("linked")));
+    assert_reason(&build("linked", &["--emit=link"]), "green_post_lto");
+    rfs::write("sample.rs", format!("\n{SOURCE}"));
+    assert_reason(&build("linked", &["--emit=link"]), "validated_debug_refresh");
+    rfs::write("sample.rs", SOURCE.replace("wrapping_mul(3)", "wrapping_mul(4)"));
+    assert_reason(&build("linked", &["--emit=link"]), "semantic_ir_differs");
+
     let executable = "#[track_caller]\nfn caller() -> u32 { std::panic::Location::caller().line() }\nfn main() { println!(\"{}:{}:{}:{}\", line!(), column!(), file!(), caller()); std::panic::set_hook(Box::new(|info| println!(\"panic:{}\", info.location().unwrap().line()))); let _ = std::panic::catch_unwind(|| panic!(\"location\")); }\n";
     rfs::write("sample.rs", executable);
     build_executable("runtime");
@@ -131,8 +165,8 @@ fn main() {
     assert_eq!(after, run("sample").stdout_utf8());
 }
 
-fn build_executable(incremental: &str) {
-    rustc()
+fn build_executable(incremental: &str) -> String {
+    let report = rustc()
         .input("sample.rs")
         .codegen_units(1)
         .opt_level("2")
@@ -140,9 +174,13 @@ fn build_executable(incremental: &str) {
         .arg("-Clto=off")
         .arg("-Cembed-bitcode=no")
         .arg("-Zincremental-source-relocation")
+        .arg("-Zincremental-relocation-report")
         .arg("-Zincremental-verify-ich")
         .incremental(incremental)
-        .run();
+        .run()
+        .stderr_utf8();
+    assert_no_output_manifests();
+    report
 }
 
 fn alter_manifests(directory: &std::path::Path, oversize: bool) {
